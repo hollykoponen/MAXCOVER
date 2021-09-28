@@ -1,0 +1,60 @@
+
+Distribution:
+License:
+========
+Published under the GPL. See file COPYRIGHT which comes along with
+this package. The RMQ code (files RMQ*) were written by Johannes 
+Fischer (Ludwig-Maximilians Uni) and also published under the GNU GPL.
+(see COPYRIGHT file). 
+
+If you use any of this code for experiments in a research paper please 
+cite the article in which the algorithm is described:
+
+Simon J. Puglisi & Andrew Turpin,
+Space-time tradeoffs for Longest-common-prefix array computation, 
+Proceedings of the 19th International Symposium on Algorithms and Computation (ISAAC'08), (2008).
+
+and publish the URL from which you downloaded the code. Thanks.
+
+Description:
+There are two programs which compute the LCP array of a string, given 
+the string and its suffix array (SA). The first program, "lcpdc", reads 
+the SA into memory and overwrites it with the LCP array. The second 
+program, "seclcpdc", leaves the SA on disk and overwrites it there 
+with the LCP array (this means less primary memory is used - the slow
+down from lcpdc is very small).
+
+Build:
+Type "make" to make the two programs: "lcpdc" and "seclcpdc".
+
+Usage:
+./lcpdc inputfile logv
+
+The file "inputfile" contains the string.
+
+The file "inputfile.sa" must also be present and
+must contain the suffix array as a string of four
+byte integers.
+
+The parameter "logv" is the logarithm (base 2) of the period of the
+difference cover you would like to use. Valid values for "logv" are
+2,3,4,5,6,7 and 8. The larger the number the less memory the program
+will use. See the paper for more details.
+
+Usage for "seclcpdc" is the same as "lcpdc", except seclcpdc will 
+expects to find a file "inputfile.lcp" which initially contains the 
+suffix array as a string of four byte integers; so usage will usually
+be something like:
+
+cp english.50MB.sa english.50MB.lcp
+./seclcpdc english.50MB 5 
+
+After seclcpdc executes "inputfile.lcp" will contain the lcp array.
+
+If you find any bugs please let me know.
+
+Simon Puglisi
+Melbourne
+November 2008
+simon . puglisi AT rmit DOT edu DOT au
+
