@@ -61,7 +61,6 @@ def extract_sample_seq(filename, sample_dir, SampleID_Set, include_header):
 
 # Call the optimal cover C++ script
 def Compute_OC(source, target, compute_OC, compute_top_ten, compute_repeatmatches, repeat_size):
-
     result_directory = os.path.join(test_result_dir, target)
     make_dirs(result_directory)
     print("\n{}".format(target))
@@ -79,15 +78,23 @@ def Compute_OC(source, target, compute_OC, compute_top_ten, compute_repeatmatche
                     str(repeat_size), 
                     abs_path]
                 
-                sp = subprocess.run(cmd, shell = True, capture_output=True)                
+                print("\n", "optimal_cover_script/bin/Release/optimal_covers")
+                print("", compute_OC, compute_top_ten, compute_repeatmatches, repeat_size)
+                print("abs_path: ", abs_path)
                 
+                sp = subprocess.run(cmd, capture_output=True)     
+                
+                print("\n out: ", sp.stdout.decode('utf-8'))
+                                
                 f.writelines(sp.stdout.decode('utf-8'))
                 fasta_sequences = SeqIO.parse(open(os.path.join(faa_dir,target+".faa")), 'fasta')
                 for fasta in fasta_sequences:
                     fasta_ID = compute_fasta_ID(fasta)
                     if file.split("_")[0] == fasta_ID:
                         f.writelines(fasta.description)
+                        
         print("{}".format(file))
+        exit()
 
 
 
