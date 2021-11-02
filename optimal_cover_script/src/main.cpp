@@ -229,8 +229,13 @@ std::vector<int> compute_olp(
     return OLP;
 }
 
+
+
+
 /* compute OLP* array of string */
 /* O(nlogn) implementation */
+// TODO: Update header file to include OLP* functions
+// TODO: Update makefile to ensure it compiles with new functions
 std::vector<int> compute_olp*(
     std::string &input,
     std::vector<int> &SA,
@@ -244,7 +249,7 @@ std::vector<int> compute_olp*(
     OLP*[1] = 0;
     std::stack<pair<int,int>> stack; // stack of pairs (index, r1)
     std::pair<int,int> top; // (index, r1)
-    runsHT.slots = 0; // # of slots filled in hashtable runsHT
+    int runsHT.slots = 0; // # of slots filled in hashtable runsHT
     std::unordered_map() runsHT; // Hashtable
     int sorted_LI = 0; // lower index of sorted range in SA
     int sorted_UI = 0;  // upper index of sorted range in SA
@@ -263,9 +268,9 @@ std::vector<int> compute_olp*(
                 while (LCP[top[0]] > LCP[i]) do {
                     OLP*[top[0]] = 0;
                     if(LCP[top[0]] != 1) {
-                        compute_Ru(top[0], top[1], i-1, Sorted_LI, Sorted_UI); // Check function exists
-                        OLP*[top[0]] = compute_OLP*_at_index(top[0]); // Check function exists
-                        compute_sorted_range(Sorted_LI, Sorted_UI, top[1], i-1); // Check function exists
+                        compute_Ru(top[0], top[1], i-1, Sorted_LI, Sorted_UI); // TODO: Check function exists
+                        OLP*[top[0]] = compute_OLP*_at_index(top[0]); // TODO: Check function exists
+                        compute_sorted_range(Sorted_LI, Sorted_UI, top[1], i-1); // TODO: Check variables match required inputs
                     }
                     stack.pop();
                     top = stack.top();
@@ -274,9 +279,10 @@ std::vector<int> compute_olp*(
                 else { stack.push( std::make_pair(i, top[0]-1) ); }
             }
         }
-        i = i+1;
+        i++;
     }
-    compute_OLP*_stack(); // Check function exists
+    compute_OLP*_stack(stack); // TODO: Check variables match required inputs
+    return OLP*;
 }
 
 
