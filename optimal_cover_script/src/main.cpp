@@ -229,6 +229,57 @@ std::vector<int> compute_olp(
     return OLP;
 }
 
+/* compute OLP* array of string */
+/* O(nlogn) implementation */
+std::vector<int> compute_olp*(
+    std::string &input,
+    std::vector<int> &SA,
+    std::vector<int> &LCP,
+    std::vector<int> &RSF,
+    std::vector<int> &R1,
+    std::vector<int> &RM
+){
+    int i = 2;
+    std::vector<int> OLP* = std::vector<int>(input.size(), 0);
+    OLP*[1] = 0;
+    std::stack<pair<int,int>> stack; // stack of pairs (index, r1)
+    std::pair<int,int> top; // (index, r1)
+    runsHT.slots = 0; // # of slots filled in hashtable runsHT
+    std::unordered_map() runsHT; // Hashtable
+    int sorted_LI = 0; // lower index of sorted range in SA
+    int sorted_UI = 0;  // upper index of sorted range in SA
+    while (i <= n) do {
+        if (stack.empty()){
+            stack.push( std::make_pair(i,i-1) );
+        }
+        else {
+            top = stack.top();
+            if(LCP[top[0]] < LCP[i]) { stack.push( std::make_pair(i, i-1) ); }
+            else if (LCP[top.index] = LCP[i]) { OLP*[i] = 0; }
+            else{
+                if (LCP[i] <= 1){
+                    runsHT.slots = 0; Sorted_LI = 0; Sorted_UI = 0;
+                }
+                while (LCP[top[0]] > LCP[i]) do {
+                    OLP*[top[0]] = 0;
+                    if(LCP[top[0]] != 1) {
+                        compute_Ru(top[0], top[1], i-1, Sorted_LI, Sorted_UI); // Check function exists
+                        OLP*[top[0]] = compute_OLP*_at_index(top[0]); // Check function exists
+                        compute_sorted_range(Sorted_LI, Sorted_UI, top[1], i-1); // Check function exists
+                    }
+                    stack.pop();
+                    top = stack.top();
+                }
+                if(top[0] = LCP[i]) { OLP*[i] = 0; }
+                else { stack.push( std::make_pair(i, top[0]-1) ); }
+            }
+        }
+        i = i+1;
+    }
+    compute_OLP*_stack(); // Check function exists
+}
+
+
 
 /* compute RSPC array of string */
 std::vector<int> compute_rspc(
@@ -444,10 +495,14 @@ void Compute_OC_main(std::string input, int top_ten){
                   << "\n\t% covered = " << OC_freq << "%"
                   << "\n\ttime elapsed " << ((float)(end - t_start)) / CLOCKS_PER_SEC << " seconds\n" << std::endl;
     }
-    std::cout << "Top Ten Covers: " << std::endl;
-    for (auto a : top_ten_covers){
-        std::cout << "out[min_vi] = " << a << " Position: " << SAarr[a] << " of length: " << LCParr[a] << std::endl;
+    
+    if(top_ten == 1){
+        std::cout << "Top Ten Covers: " << std::endl;
+        for (auto a : top_ten_covers){
+            std::cout << "out[min_vi] = " << a << " Position: " << SAarr[a] << " of length: " << LCParr[a] << std::endl;
+        }
     }
+    
 }
 
 

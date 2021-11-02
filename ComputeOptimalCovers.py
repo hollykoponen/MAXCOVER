@@ -77,14 +77,9 @@ def Compute_OC(source, target, compute_OC, compute_top_ten, compute_repeatmatche
                     str(compute_repeatmatches),
                     str(repeat_size), 
                     abs_path]
-                
-                print("\n", "optimal_cover_script/bin/Release/optimal_covers")
-                print("", compute_OC, compute_top_ten, compute_repeatmatches, repeat_size)
-                print("abs_path: ", abs_path)
-                
+
                 sp = subprocess.run(cmd, capture_output=True)     
                 
-                print("\n out: ", sp.stdout.decode('utf-8'))
                                 
                 f.writelines(sp.stdout.decode('utf-8'))
                 fasta_sequences = SeqIO.parse(open(os.path.join(faa_dir,target+".faa")), 'fasta')
@@ -94,7 +89,6 @@ def Compute_OC(source, target, compute_OC, compute_top_ten, compute_repeatmatche
                         f.writelines(fasta.description)
                         
         print("{}".format(file))
-        exit()
 
 
 
