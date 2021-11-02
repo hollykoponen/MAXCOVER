@@ -31,6 +31,7 @@ int get_max(std::vector<std::vector<int>> &vec) {
 
 // TODO: Update header file to include OLP* functions
 // TODO: Update makefile to ensure it compiles with new functions
+// TODO: Double check for errors in code / converting from counting from 0 instead of 1
 
 // TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
 void compute_OLP*_stack(std::stack<std::pair<int,int>> stack) {
@@ -71,7 +72,7 @@ int commpute_OLP*_at_index(int index){
     lcp_i = LCP[index]; OLPi = 0;
     for (int r : runsHT) { // for each r in runs HT and p < l; r = (i, j, p); 
         if (p < lcp_i) {
-            fru = compute_frequency(i, j, p, r.sp, r.sp + lcp_i - 1) // TODO: Check Typing; TODO: Check function exists; r.sp is the starting position of the NRE in r
+            fru = compute_frequency(i, j, p, r.sp, r.sp + lcp_i - 1) // TODO: Check Typing; r.sp is the starting position of the NRE in r
             OLPi = OLPi + (lcp_i - p) * (fru - 1)
         }
     }
@@ -103,7 +104,7 @@ void compute_eruns(int index, int i, int j){
     int k = i;
     while (k < j) do {
         if (SA*[k+1] - SA*[k] < lcp_i) { // TODO: Ensure has access to SA*
-            r = exrun(SA*[k], SA*[k+1] + lcp_i - 1); // TODO: Need to implement Exrun; r = (i', j', p')
+            r = exrun(SA*[k], SA*[k+1] + lcp_i - 1); // TODO: Need to implement Exrun; r = (i', j', p'); TODO: Ensure runs & variable names are called correctly; Call Compute_runs beforehand to determine the runs needed to be passed into exrun
             fru = compute_frequency(r[0], r[1], r[2], SA*[k], SA*[k] + lcp_i - 1); // TODO: Check function exists
             runsHT.insert(r); // Add r to hashtable runsHT // TODO: ensure this is correctly called
             k = k + fru - 1; 
@@ -112,19 +113,20 @@ void compute_eruns(int index, int i, int j){
     }
 }
 
+// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
 void merge_compute_eruns(i1, j1, i2, j2){ // TODO: Check function has access to SA*
     len_1 = j1 - i1 + 1; // length of sublist SA*[i1..j1]
     len_2 = j2 - i2 + 1; // length of sublist SA*[i2..j2]
     std::vector<int> L = std::vector<int>(len_1, 0);
     std::vector<int> R = std::vector<int>(len_1, 0);
-    for (i = 1; i <= len_1; i++){ // TODO: Check i < len_1? or i <= len_1 ? 
+    for (i = 1; i <= len_1; i++){ // TODO: Check j = 0 to i < len_1 instead of 1 to i <= len_1 ? 
         L[i] = SA*[i1 + i - 1];
     }
-    for (j = 1; j <= len_2; j++){ // TODO: Check j < len_2? or j <= len_2 ?
+    for (j = 1; j <= len_2; j++){ // TODO: Check j = 0 to j < len_2 instead jof 1 to j <= len_2 ?
         R[j] = SA*[i2 + j - 1];
     }
-    int i = 1; int j = 1; // TODO: Check: Are we modifiying an pre-existing i and j? or instantiating it?
-    for (k = i1; k <= j2; k++) { // TODO: Check k < j2? or k <= j2 ?
+    int i = 1; int j = 1; 
+    for (k = i1; k <= j2; k++) { 
         if( i <= len_1 && j <= len_2) {
             if (L[i] <= R[j]) {
                 SA*[k] = L[i];
@@ -140,14 +142,14 @@ void merge_compute_eruns(i1, j1, i2, j2){ // TODO: Check function has access to 
                 SA*[k] = R[j];
                 j++;
             }
-            if (j = len_2 + 1) { // TODO: Check: Is this if? or else? or else if?
+            if (j = len_2 + 1) { 
                 SA*[k] = L[i];
                 i++; 
             }
         }
         if( (k > i1) 
           && (SA*[k] - SA*[k-1] < lcp_i)) { //TODO: Check: Is this lcp_i that I labelled before? or some other l? or another len?
-            r = exrun(SA*[k-1], SA*[k]+lcp_i-1); // TODO: Check exrun exists
+            r = exrun(SA*[k-1], SA*[k]+lcp_i-1); // TODO: Check exrun exists; TODO: Ensure runs & variable names are called correctly; Call Compute_runs beforehand to determine the runs needed to be passed into exrun
             runsHT.insert(r); // Hash function to add r to hashtable runsHT
         }
     }
@@ -324,6 +326,9 @@ std::vector<int> compute_rm(
     return rm;
 }
 
+
+// TODO: Check that exrun runs correctly for both quadratic and O(nlogn) implementation;
+// Answer: This is not optimized version. TODO: Update later for optimization to O(nlogn) version
 std::vector<int> exrun(
     const int &i,
     const int &j,
