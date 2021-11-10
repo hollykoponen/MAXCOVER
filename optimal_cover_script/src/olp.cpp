@@ -1,7 +1,3 @@
-//
-// Created by vi.
-//
-
 // INCLUDES =======================================================================================
 #include <iostream>
 #include <cmath>
@@ -11,6 +7,7 @@
 #include <stack>
 #include <tuple>
 #include <string>
+#include <map>
 #include "RMQ/RMQ_succinct.hpp"
 #include "olp.h"
 
@@ -27,28 +24,44 @@ int get_max(std::vector<std::vector<int>> &vec) {
     ))[0];
 }
 
-// COMPUTE OLP* O(nlogn) Implementation ===========================================================
+// COMPUTE OLP_nlogn O(nlogn) Implementation ===========================================================
 
-// TODO: Update header file to include OLP* functions
+// TODO: Update header file to include OLP_nlogn functions
 // TODO: Update makefile to ensure it compiles with new functions
 // TODO: Double check for errors in code / converting from counting from 0 instead of 1
 
-// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
-void compute_OLP*_stack(std::stack<std::pair<int,int>> stack) {
-    while (!stack.empty()) do {
-        if(LCP[top[0] = 0) { OLP*[top[0]] = 0 };
+
+void compute_OLP_nlogn_stack(
+    int i,
+    int Sorted_LI, 
+    int Sorted_UI,
+    std::pair<int, int> &top,
+    std::vector<int> &SA,
+    std::vector<int> &LCP,
+    std::vector<int> &OLP_nlogn,
+    std::stack<std::pair<int,int>> &stack,
+    std::map<int, std::array<int, 3>> &runsHT 
+    ) {
+    
+    while (!stack.empty()) {
+        if (LCP[top.first = 0]) { OLP_nlogn[top.first] = 0; }
         else {
-            compute_Ru(top[0], top[1], i-1, Sorted_LI, Sorted_UI); // TODO: Check function exists
-            OLP*[top[0]] = compuite_OLP*_at_index(top[0]); // TODO: Check function exists
-            compute_sorted_range(Sorted_LI, Sorted_UI, top[1], i-1); 
+            compute_Ru(top.first, top.second, i-1, Sorted_LI, Sorted_UI, SA, LCP, runsHT); 
+            OLP_nlogn[top.first] = compute_OLP_nlogn_at_index(top.first, LCP, runsHT);
+            compute_sorted_range(Sorted_LI, Sorted_UI, top.second, i-1); 
         }
         stack.pop();
     }
 }
 
-// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
-void compute_sorted_range(int Sorted_LI, int Sorted_UI, int r1, int rm){
-    if (Sorted_LI = 0 && SortedUI = 0) {
+void compute_sorted_range(
+    int &Sorted_LI, 
+    int &Sorted_UI, 
+    int r1, 
+    int rm
+    ) {
+    
+    if (Sorted_LI == 0 && Sorted_UI == 0) {
         Sorted_LI = r1; Sorted_UI = rm;
     }
     else {
@@ -58,99 +71,155 @@ void compute_sorted_range(int Sorted_LI, int Sorted_UI, int r1, int rm){
     }
 }
 
-// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
-void compute_Ru(int index, int i, int j, sorted_i, sorted_j){ // TODO: Add variable typing; (i,j) is the range pair (r1 .. rm) for u
-    int lcp_i = LCP[index];
-    if (runsHT.slots != 0) { // Remove non-eligible runs of u from runsHT
-        // TODO: Delete all slots with period > |v| in runsHT
+void compute_Ru(
+    int index, 
+    int i, // (i,j) is the range pair (r1 .. rm) for u
+    int j, 
+    int sorted_i, 
+    int sorted_j,
+    std::vector<int> &SA,
+    std::vector<int> &LCP,
+    std::map<int,std::array<int, 3>> runsHT) { 
+    
+    int len_u = LCP[index];
+    if (runsHT.size() != 0) { // Remove non-eligible runs of u from runsHT
+        for (auto it = runsHT.begin(); it != runsHT.end();) { // r = (i, j, p)
+            if (it->first > len_u) { 
+                it = runsHT.erase(it); // |v| is actually len of u; Delete all slots with period > |v| in runsHT
+            }
+            else {
+                it++;
+            }
+        }
     }
-    sort(index, i, j, sorted_i, sorted_j, lcp_i); // TODO: Check function exists
+    sort(index, i, j, sorted_i, sorted_j, len_u, SA, LCP, runsHT);
 }
 
-// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
-int commpute_OLP*_at_index(int index){
-    lcp_i = LCP[index]; OLPi = 0;
-    for (int r : runsHT) { // for each r in runs HT and p < l; r = (i, j, p); 
-        if (p < lcp_i) {
-            fru = compute_frequency(i, j, p, r.sp, r.sp + lcp_i - 1) // TODO: Check Typing; r.sp is the starting position of the NRE in r
-            OLPi = OLPi + (lcp_i - p) * (fru - 1)
+
+int compute_OLP_nlogn_at_index(
+    int index,
+    std::vector<int> &LCP,
+    std::map<int, std::array<int, 3>> runsHT
+    ) {
+    
+    int len_u = LCP[index]; 
+    int OLPi = 0;
+    
+    for (auto const& r : runsHT ) { // for each r in hash table r = (i, j, p); 
+        if (r.second[2] < len_u) { // if p < l;
+            int fru = compute_frequency(r, r.sp, r.sp + len_u - 1) // TODO: Check Typing; r.sp is the starting position of the NRE in r
+            OLPi = OLPi + (len_u - r[2]) * (fru - 1)
         }
     }
     return OLPi;
 }
 
-// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
-void sort(int index, int i, int j, prev_i, prev_j, int lcp_i){ // TODO: Add variable typing; 
-    // TODO: Copy elements SA[i..j] to SA*[i..j]
+void sort(
+    int index, 
+    int i, 
+    int j, 
+    int prev_i, 
+    int prev_j, 
+    int len_u,
+    std::vector<int> &SA,
+    std::vector<int> &LCP,
+    std::map<int, std::array<int, 3>> runsHT
+    ) {
+    
+    std::vector<int> SA_temp = std::vector<int>(j-i+1, 0);
+    std::copy(SA.begin() + i, SA.begin() + j + 1, SA_temp); // copy elements SA[i..j] to SA_temp[i..j]
+    
     if (prev_i != 0 
       && prev_j != 0 
-      && (i < prev_i || prev_j < j) {
+      && (i < prev_i || prev_j < j)
+        ) {
+        
         if (i < prev_i) {
-            // TODO: Sort elements of SA*[i..prev_i -1] in ascending order
-            compute_eruns(index, i, prev_i-1); // TODO: Check function exists      
-        }
+            std::sort(SA_temp.begin() + i, SA_temp.begin() + prev_i); // Sort elements of SA_temp[i..prev_i -1] in ascending order, +1 end
+            compute_eruns(index, i, prev_i-1, LCP, SA_temp, runsHT);     
+            }
         if (prev_j < j) {
-            // TODO: Sort elements of SA*[prev_j+1..j] in ascending order
-            compute_eruns(inddex, prev_j+1, j); // TODO: Check function exists
+            std::sort(SA_temp.begin() + prev_j+1, SA_temp.begin() + j + 1); // Sort elements of SA_temp[prev_j+1..j] in ascending order, +1 end
+            compute_eruns(index, prev_j+1, j, LCP, SA_temp, runsHT);
+            }
+        if (i < prev_i) { merge_compute_eruns(i, prev_i-1, prev_i, prev_j, SA_temp, runsHT); } 
+        if (prev_j < j) { merge_compute_eruns(i, prev_j, prev_j + 1, j, SA_temp, runsHT); } 
         }
-        if (i < prev_i) { merge_compute_eruns(i, prev_i-1, prev_i, prev_j); } // TODO: Check function exists
-        if (prev_j < j) { merge_compute_eruns(i, prev_j, prev_j + 1, j); } // TODO: Check function exists
-    }
 }
 
-// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
-void compute_eruns(int index, int i, int j){
-    int lcp_i = LCP[index];
+void compute_eruns(
+    int index, 
+    int i, 
+    int j, 
+    std::vector<int> &LCP,
+    std::vector<int> &SA_temp,
+    std::map<int, std::array<int, 3>> runsHT
+    ) {
+    
+    int len_u = LCP[index];
     int k = i;
-    while (k < j) do {
-        if (SA*[k+1] - SA*[k] < lcp_i) { // TODO: Ensure has access to SA*
-            r = exrun(SA*[k], SA*[k+1] + lcp_i - 1); // TODO: Need to implement Exrun; r = (i', j', p'); TODO: Ensure runs & variable names are called correctly; Call Compute_runs beforehand to determine the runs needed to be passed into exrun
-            fru = compute_frequency(r[0], r[1], r[2], SA*[k], SA*[k] + lcp_i - 1); // TODO: Check function exists
-            runsHT.insert(r); // Add r to hashtable runsHT // TODO: ensure this is correctly called
+
+    while (k < j) {
+        if (SA_temp[k+1] - SA_temp[k] < len_u) { 
+            std::array<int, 3> r = exrun(SA_temp[k], SA_temp[k+1] + len_u - 1); // TODO: Need to implement optimized Exrun; r = (i', j', p'); TODO: Ensure runs & variable names are called correctly; Call Compute_runs beforehand to determine the runs needed to be passed into exrun
+            int fru = compute_frequency(r, SA_temp[k], SA_temp[k] + len_u - 1); 
+            runsHT.insert({r[2], r}); // Add r to hashtable runsHT
             k = k + fru - 1; 
         }
         else { k++; }
     }
 }
 
-// TODO: Ensure procedure modifies the specified variables, or does it need to be passed in by reference?
-void merge_compute_eruns(i1, j1, i2, j2){ // TODO: Check function has access to SA*
-    len_1 = j1 - i1 + 1; // length of sublist SA*[i1..j1]
-    len_2 = j2 - i2 + 1; // length of sublist SA*[i2..j2]
-    std::vector<int> L = std::vector<int>(len_1, 0);
-    std::vector<int> R = std::vector<int>(len_1, 0);
-    for (i = 1; i <= len_1; i++){ // TODO: Check j = 0 to i < len_1 instead of 1 to i <= len_1 ? 
-        L[i] = SA*[i1 + i - 1];
+
+void merge_compute_eruns(
+    int i1, 
+    int j1, 
+    int i2, 
+    int j2,
+    std::vector<int> &SA_temp,
+    std::map<int, std::array<int, 3>> runsHT
+    ) { 
+    
+    int len_1 = j1 - i1 + 1; // length of sublist SA_temp[i1..j1]
+    int len_2 = j2 - i2 + 1; // length of sublist SA_temp[i2..j2]
+    std::vector<int> L = std::vector<int>(len_1, 0) ;
+    std::vector<int> R = std::vector<int> (len_1, 0);
+
+    for (int i = 1; i <= len_1; i++){ // TODO: Check j = 0 to i < len_1 instead of 1 to i <= len_1 ? 
+        L[i] = SA_temp[i1 + i - 1];
     }
-    for (j = 1; j <= len_2; j++){ // TODO: Check j = 0 to j < len_2 instead jof 1 to j <= len_2 ?
-        R[j] = SA*[i2 + j - 1];
+    for (int j = 1; j <= len_2; j++){ // TODO: Check j = 0 to j < len_2 instead jof 1 to j <= len_2 ?
+        R[j] = SA_temp[i2 + j - 1];
     }
-    int i = 1; int j = 1; 
-    for (k = i1; k <= j2; k++) { 
+
+    int i = 1; 
+    int j = 1; 
+    
+    for (int k = i1; k <= j2; k++) { 
         if( i <= len_1 && j <= len_2) {
             if (L[i] <= R[j]) {
-                SA*[k] = L[i];
+                SA_temp[k] = L[i];
                 i++;
             }
             else {
-                SA*[k] = R[j]; 
+                SA_temp[k] = R[j]; 
                 j++;
             }
         }
         else {
             if (i = len_1 + 1) {
-                SA*[k] = R[j];
+                SA_temp[k] = R[j];
                 j++;
             }
             if (j = len_2 + 1) { 
-                SA*[k] = L[i];
+                SA_temp[k] = L[i];
                 i++; 
             }
         }
         if( (k > i1) 
-          && (SA*[k] - SA*[k-1] < lcp_i)) { //TODO: Check: Is this lcp_i that I labelled before? or some other l? or another len?
-            r = exrun(SA*[k-1], SA*[k]+lcp_i-1); // TODO: Check exrun exists; TODO: Ensure runs & variable names are called correctly; Call Compute_runs beforehand to determine the runs needed to be passed into exrun
-            runsHT.insert(r); // Hash function to add r to hashtable runsHT
+          && (SA_temp[k] - SA_temp[k-1] < lcp_i)) { //TODO: Check: Is this lcp_i that I labelled before? or some other l? or another len?
+            std::array<int, 3> r = exrun(SA_temp[k-1], SA_temp[k]+lcp_i-1); // TODO: Check exrun exists; TODO: Ensure runs & variable names are called correctly; Call Compute_runs beforehand to determine the runs needed to be passed into exrun
+            runsHT.insert({r[2], r}); // Hash function to add r to hashtable runsHT
         }
     }
 }
@@ -392,20 +461,20 @@ int compute_olpi(
     int &rm,
     std::vector<int> &lcp,
     std::vector<int> &sa,
-//    std::vector<std::vector<std::pair<int, int>>> &runs,
+    // std::vector<std::vector<std::pair<int, int>>> &runs,
     std::vector<std::set<std::pair<int, int>>> &runs,
     std::string &input
 ) {
     int olpi = 0;
-    std::vector<int> sa_temp(input.size());
+    std::vector<int> sa_temp(rm - r1 + 1, 0);
 
-    // copy elements of SA[r1..rm] to SA*[r1..rm]
-    for (int q = r1; q <= rm; ++q) {
-        sa_temp[q] = sa[q];
-    }
+    std::copy(sa.begin() + r1, sa.begin() + rm + 1, sa_temp)    // copy elements of SA[r1..rm] to SA_temp[r1..rm]
+    //for (int q = r1; q <= rm; ++q) {
+    //    sa_temp[q] = sa[q];
+    //}
 
     // sort SA_temp in ascending order using mergesort O(nlogn)
-//    mergeSort(sa_temp, r1, rm); // NOTE: why r1 and rm here
+    //    mergeSort(sa_temp, r1, rm); // NOTE: why r1 and rm here
     if (r1 < rm) {
         std::sort(sa_temp.begin() + r1, sa_temp.begin() + rm + 1);
     }

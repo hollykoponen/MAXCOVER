@@ -11,6 +11,7 @@
 #include <stack>
 #include <string>
 #include <iomanip>
+#include <map>
 #include "olp.h"
 #include "sais/sais.h"
 #include "lcpdc/dc_lcp_oracle.h"
@@ -56,7 +57,8 @@ std::vector<int> compute_rsf(
         std::vector<int> &LCP //,
         // std::vector<int> &R1,
         // std::vector<int> &RM
-) {
+    ) {
+
     std::vector<int> rsf(SA.size());
     std::stack<int> st;
     int i = 0;
@@ -130,7 +132,8 @@ std::vector<int> compute_rsf_all(
         std::string &input,
         std::vector<int> &SA,
         std::vector<int> &LCP
-) {
+    ) {
+    
     std::vector<int> RSF_all(SA.size());
     std::stack<int> st;
     int i = 0;
@@ -202,7 +205,7 @@ std::vector<int> compute_olp(
     std::vector<int> &RSF,
     std::vector<int> &R1,
     std::vector<int> &RM
-) {
+    ) {
 
     std::vector<int> RANK = compute_rank(SA);
 
@@ -211,7 +214,7 @@ std::vector<int> compute_olp(
     std::vector<int> SA_rev = compute_sa(reverse);
 
     std::vector<int> LCS = compute_lcp(reverse, SA_rev);
- //   std::vector<int> LCS = {0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9}; 
+    // std::vector<int> LCS = {0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9}; 
 
     std::vector<int> revRANK = compute_rank(SA_rev);
 
@@ -220,7 +223,7 @@ std::vector<int> compute_olp(
     std::vector<int> OLP = std::vector<int>(input.size(), 0);
 
     for (int i = 0; i < OLP.size(); i++) {
-//        std::cout << i << " out of " << OLP.size() << " " << OLP.size() << "left..." << std::endl;
+    // std::cout << i << " out of " << OLP.size() << " " << OLP.size() << "left..." << std::endl;
         if (RSF[i] != 0) {
             OLP[i] = compute_olpi(i, R1[i], RM[i], LCP, SA, runs, input);
         }
@@ -232,57 +235,61 @@ std::vector<int> compute_olp(
 
 
 
-/* compute OLP* array of string */
+/* compute OLP_nlogn array of string */
 /* O(nlogn) implementation */
-// TODO: Update header file to include OLP* functions
+// TODO: Update header file to include OLP_nlogn functions
 // TODO: Update makefile to ensure it compiles with new functions
-std::vector<int> compute_olp*(
+std::vector<int> compute_OLP_nlogn(
     std::string &input,
     std::vector<int> &SA,
     std::vector<int> &LCP,
     std::vector<int> &RSF,
     std::vector<int> &R1,
     std::vector<int> &RM
-){
+    ) {
+    
     int i = 2;
-    std::vector<int> OLP* = std::vector<int>(input.size(), 0);
-    OLP*[1] = 0;
+    std::vector<int> OLP_nlogn = std::vector<int>(input.size(), 0);
+    OLP_nlogn[1] = 0;
     std::stack<pair<int,int>> stack; // stack of pairs (index, r1)
     std::pair<int,int> top; // (index, r1)
-    int runsHT.slots = 0; // # of slots filled in hashtable runsHT
-    std::unordered_map() runsHT; // Hashtable
-    int sorted_LI = 0; // lower index of sorted range in SA
-    int sorted_UI = 0;  // upper index of sorted range in SA
-    while (i <= n) do {
+    // int runsHT.slots = 0; // # of slots filled in hashtable runsHT
+    std::map<int, std::array<int, 3>> runsHT; // Hashtable int Key, tuple r = (i, j, p) Value 
+    int Sorted_LI = 0; // lower index of sorted range in SA
+    int Sorted_UI = 0;  // upper index of sorted range in SA
+    
+    while (i <= input.size()) {
         if (stack.empty()){
             stack.push( std::make_pair(i,i-1) );
         }
         else {
             top = stack.top();
-            if(LCP[top[0]] < LCP[i]) { stack.push( std::make_pair(i, i-1) ); }
-            else if (LCP[top.index] = LCP[i]) { OLP*[i] = 0; }
+            if (LCP[top.first] < LCP[i]) { stack.push( std::make_pair(i, i-1) ); }
+            else if (LCP[top.first] = LCP[i]) { OLP_nlogn[i] = 0; }
             else{
                 if (LCP[i] <= 1){
-                    runsHT.slots = 0; Sorted_LI = 0; Sorted_UI = 0;
+                    runsHT.clear();  // clears the contents of hash table; original: runsHT.slots = 0
+                    Sorted_LI = 0; 
+                    Sorted_UI = 0;
                 }
-                while (LCP[top[0]] > LCP[i]) do {
-                    OLP*[top[0]] = 0;
-                    if(LCP[top[0]] != 1) {
-                        compute_Ru(top[0], top[1], i-1, Sorted_LI, Sorted_UI); // TODO: Check function exists
-                        OLP*[top[0]] = compute_OLP*_at_index(top[0]); // TODO: Check function exists
-                        compute_sorted_range(Sorted_LI, Sorted_UI, top[1], i-1); // TODO: Check variables match required inputs
+                while (LCP[top.first] > LCP[i]) {
+                    OLP_nlogn[top.first] = 0;
+                    if(LCP[top.first] != 1) {
+                        compute_Ru(top.first, top.second, i-1, Sorted_LI, Sorted_UI, SA, LCP, runsHT); 
+                        OLP_nlogn[top.first] = compute_OLP_nlogn_at_index(top.first, LCP, runsHT);
+                        compute_sorted_range(Sorted_LI, Sorted_UI, top.second, i-1); 
                     }
                     stack.pop();
                     top = stack.top();
                 }
-                if(top[0] = LCP[i]) { OLP*[i] = 0; }
-                else { stack.push( std::make_pair(i, top[0]-1) ); }
+                if (top.first = LCP[i]) { OLP_nlogn[i] = 0; }
+                else { stack.push( std::make_pair(i, top.first-1) ); }
             }
         }
         i++;
     }
-    compute_OLP*_stack(stack); // TODO: Check variables match required inputs
-    return OLP*;
+    compute_OLP_nlogn_stack(i, Sorted_LI, Sorted_UI, top, SA, LCP, OLP_nlogn, stack, runsHT); 
+    return OLP_nlogn;
 }
 
 

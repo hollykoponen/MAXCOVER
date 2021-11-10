@@ -17,7 +17,68 @@
 
 int get_max(std::vector<std::vector<int>> &vec);
 
-// COMPUTE =====================================================================
+// COMPUTE OLP_nlogn O(nlogn) Implementation ===========================================================
+
+void compute_OLP_nlogn_stack(
+    int i,
+    int Sorted_LI, 
+    int Sorted_UI,
+    std::pair<int, int> &top,
+    std::vector<int> &SA,
+    std::vector<int> &LCP,
+    std::vector<int> &OLP_nlogn,
+    std::stack<std::pair<int,int>> &stack,
+    std::map<int, std::array<int, 3>> &runsHT 
+    );
+void compute_sorted_range(
+    int &Sorted_LI, 
+    int &Sorted_UI, 
+    int r1, 
+    int rm
+    );
+void compute_Ru(
+    int index, 
+    int i, 
+    int j, 
+    int sorted_i, 
+    int sorted_j,
+    std::vector<int> &SA,
+    std::vector<int> &LCP,
+    std::map<int,std::array<int, 3>> runsHT);
+int compute_OLP_nlogn_at_index(
+    int index,
+    std::vector<int> &LCP,
+    std::map<int, std::array<int, 3>> runsHT
+    );
+void sort(
+    int index, 
+    int i, 
+    int j, 
+    int prev_i, 
+    int prev_j, 
+    int len_u,
+    std::vector<int> &SA,
+    std::vector<int> &LCP,
+    std::map<int, std::array<int, 3>> runsHT
+    ); 
+void compute_eruns(
+    int index, 
+    int i, 
+    int j, 
+    std::vector<int> &LCP,
+    std::vector<int> &SA_temp,
+    std::map<int, std::array<int, 3>> runsHT
+    );
+void merge_compute_eruns(
+    int i1, 
+    int j1, 
+    int i2, 
+    int j2,
+    std::vector<int> &SA_temp,
+    std::map<int, std::array<int, 3>> runsHT
+    );
+    
+// COMPUTE OLP Quadratic Implementation ===========================================================
 
 std::vector<int> compute_rank(std::vector<int>&);
 int lc(
