@@ -28,7 +28,8 @@ void compute_OLP_nlogn_stack(
     std::vector<int> &LCP,
     std::vector<int> &OLP_nlogn,
     std::stack<std::pair<int,int>> &stack,
-    std::map<int, std::array<int, 3>> &runsHT 
+    std::map<int, std::vector<int>> &runsHT,
+    std::vector<std::set<std::pair<int, int>>> runs  
     );
 void compute_sorted_range(
     int &Sorted_LI, 
@@ -37,18 +38,20 @@ void compute_sorted_range(
     int rm
     );
 void compute_Ru(
-    int index, 
-    int i, 
+    int &index, 
+    int &i, // (i,j) is the range pair (r1 .. rm) for u
     int j, 
-    int sorted_i, 
-    int sorted_j,
+    int &sorted_i, 
+    int &sorted_j,
     std::vector<int> &SA,
     std::vector<int> &LCP,
-    std::map<int,std::array<int, 3>> runsHT);
+    std::map<int,std::vector<int>> &runsHT,
+    std::vector<std::set<std::pair<int, int>>> runs 
+    );
 int compute_OLP_nlogn_at_index(
     int index,
     std::vector<int> &LCP,
-    std::map<int, std::array<int, 3>> runsHT
+    std::map<int, std::vector<int>> &runsHT
     );
 void sort(
     int index, 
@@ -59,7 +62,8 @@ void sort(
     int len_u,
     std::vector<int> &SA,
     std::vector<int> &LCP,
-    std::map<int, std::array<int, 3>> runsHT
+    std::map<int, std::vector<int>> &runsHT,
+    std::vector<std::set<std::pair<int, int>>> runs 
     ); 
 void compute_eruns(
     int index, 
@@ -67,7 +71,8 @@ void compute_eruns(
     int j, 
     std::vector<int> &LCP,
     std::vector<int> &SA_temp,
-    std::map<int, std::array<int, 3>> runsHT
+    std::map<int, std::vector<int>> &runsHT,
+    std::vector<std::set<std::pair<int, int>>> runs 
     );
 void merge_compute_eruns(
     int i1, 
@@ -75,9 +80,19 @@ void merge_compute_eruns(
     int i2, 
     int j2,
     std::vector<int> &SA_temp,
-    std::map<int, std::array<int, 3>> runsHT
+    std::vector<int> &LCP,
+    std::map<int, std::vector<int>> &runsHT,
+    int index,
+    int len_u,
+    std::vector<std::set<std::pair<int, int>>> runs 
     );
-    
+std::vector<int> exrun_nlogn(
+    const int &i,
+    const int &j,
+    const int &lcp_i,
+    std::vector<std::set<std::pair<int, int>>> &runs
+);
+
 // COMPUTE OLP Quadratic Implementation ===========================================================
 
 std::vector<int> compute_rank(std::vector<int>&);
@@ -105,7 +120,11 @@ std::vector<int> exrun(
     const int&,
     std::vector<std::set<std::pair<int, int>>>&
 );
-int compute_frequency(std::vector<int>&, int&, int&);
+int compute_frequency(
+    std::vector<int> r, 
+    int i_prime, 
+    int j_prime
+);
 int compute_olpi(
     int&,
     int&,

@@ -254,18 +254,28 @@ std::vector<int> compute_OLP_nlogn(
     std::stack<pair<int,int>> stack; // stack of pairs (index, r1)
     std::pair<int,int> top; // (index, r1)
     // int runsHT.slots = 0; // # of slots filled in hashtable runsHT
-    std::map<int, std::array<int, 3>> runsHT; // Hashtable int Key, tuple r = (i, j, p) Value 
+    std::map<int, std::vector<int>> runsHT; // Hashtable int Key, tuple r = (i, j, p) Value 
     int Sorted_LI = 0; // lower index of sorted range in SA
     int Sorted_UI = 0;  // upper index of sorted range in SA
-    
+
+    //From quadratic code to use current exrun implementation
+    std::vector<int> RANK = compute_rank(SA);
+    std::string reverse(input);
+    std::reverse(reverse.begin(), reverse.end());
+    std::vector<int> SA_rev = compute_sa(reverse);
+    std::vector<int> LCS = compute_lcp(reverse, SA_rev);
+    std::vector<int> revRANK = compute_rank(SA_rev);
+    std::vector<std::set<std::pair<int, int>>> runs = compute_runs(LCP, LCS, RANK, revRANK);
+
     while (i <= input.size()) {
         if (stack.empty()){
             stack.push( std::make_pair(i,i-1) );
         }
         else {
+
             top = stack.top();
             if (LCP[top.first] < LCP[i]) { stack.push( std::make_pair(i, i-1) ); }
-            else if (LCP[top.first] = LCP[i]) { OLP_nlogn[i] = 0; }
+            else if (LCP[top.first] == LCP[i]) { OLP_nlogn[i] = 0; }
             else{
                 if (LCP[i] <= 1){
                     runsHT.clear();  // clears the contents of hash table; original: runsHT.slots = 0
@@ -274,21 +284,34 @@ std::vector<int> compute_OLP_nlogn(
                 }
                 while (LCP[top.first] > LCP[i]) {
                     OLP_nlogn[top.first] = 0;
+
+                    std::cout << "1" << std::endl;
+
                     if(LCP[top.first] != 1) {
-                        compute_Ru(top.first, top.second, i-1, Sorted_LI, Sorted_UI, SA, LCP, runsHT); 
+                        
+                        std::cout << "2" << std::endl;
+
+                        compute_Ru(top.first, top.second, i-1, Sorted_LI, Sorted_UI, SA, LCP, runsHT, runs); 
+                        
+                        std::cout << "3" << std::endl;
+
                         OLP_nlogn[top.first] = compute_OLP_nlogn_at_index(top.first, LCP, runsHT);
                         compute_sorted_range(Sorted_LI, Sorted_UI, top.second, i-1); 
                     }
+
+                    std::cout << "4" << std::endl;
+                    exit(0);
+
                     stack.pop();
                     top = stack.top();
                 }
-                if (top.first = LCP[i]) { OLP_nlogn[i] = 0; }
+                if (top.first == LCP[i]) { OLP_nlogn[i] = 0; }
                 else { stack.push( std::make_pair(i, top.first-1) ); }
             }
         }
         i++;
     }
-    compute_OLP_nlogn_stack(i, Sorted_LI, Sorted_UI, top, SA, LCP, OLP_nlogn, stack, runsHT); 
+    compute_OLP_nlogn_stack(i, Sorted_LI, Sorted_UI, top, SA, LCP, OLP_nlogn, stack, runsHT, runs); 
     return OLP_nlogn;
 }
 
@@ -484,7 +507,8 @@ void Compute_OC_main(std::string input, int top_ten){
     std::vector<int> RSFarr = compute_rsf(input, SAarr, LCParr);
     std::vector<int> R1 = compute_r1(LCParr, RSFarr);
     std::vector<int> RM = compute_rm(R1, RSFarr);    
-    std::vector<int> OLParr =  compute_olp(input, SAarr, LCParr, RSFarr, R1, RM);
+    std::vector<int> OLParr =  compute_OLP_nlogn(input, SAarr, LCParr, RSFarr, R1, RM);
+    //std::vector<int> OLParr =  compute_olp(input, SAarr, LCParr, RSFarr, R1, RM);
     std::vector<int> RSPCarr = compute_rspc(input, LCParr, RSFarr, OLParr);
     std::vector<int> OCListarr = compute_optimal_covers(LCParr, RSPCarr);
     std::vector<int> top_ten_covers;
