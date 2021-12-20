@@ -1,0 +1,584 @@
+    1  df
+    2  cd Documents/Dev/
+    3  ls
+    4  cd test_data_mummer/
+    5  ls
+    6  ls *.ans
+    7  ls
+    8  cd Documents/Dev/Brian_Optimal_Covers/
+    9  ls
+   10  cd optimal_cover_script/
+   11  ls
+   12  cd Documents/Dev/Linux_Optimal_Covers/
+   13  ls
+   14  python3 ComputeOptimalCovers.py 
+   15  ls
+   16  cd optimal_cover_script/
+   17  ls
+   18  cd src/
+   19  ls
+   20  g++ test -o main.cpp
+   21  g++ test-o main.cpp
+   22  g++ main.cpp
+   23  g++ -o test source.cpp
+   24  cd ..
+   25  g++ -o test source.cpp
+   26  cd src/
+   27  g++ -o test main.cpp
+   28  ls
+   29  cd ..
+   30  ls
+   31  make
+   32  cd ..
+   33  ls
+   34  python3 ComputeOptimalCovers.py 
+   35  cd test_data/data_files/human_protein/
+   36  ls h*.111*.txt
+   37  ls h*.1*.txt
+   38  ls h*.1*
+   39  ls
+   40  vi YP_003024038.1_116249.txt 
+   41  cd ../../
+   42  ls
+   43  rm *
+   44  ls
+   45  rm -r /path/to/dir/*
+   46  rm -r *
+   47  ls
+   48  cd ..
+   49  ls
+   50  cd ..
+   51  ls
+   52  cd Documents/Dev/
+   53  ls
+   54  cd Linux_Optimal_Covers/
+   55  ls
+   56  python3 ComputeOptimalCovers.py 
+   57  cd ..
+   58  ls
+   59  cd MUMmer/
+   60  ls
+   61  cd test_data_mummer/
+   62  rm *
+   63  rm h*
+   64  rm h*.1*
+   65  rm h*.2*
+   66  rm h*.3*
+   67  rm h*.4*
+   68  rm h*.5*
+   69  rm h*.6*
+   70  rm h*
+   71  rm *
+   72  rm A*
+   73  rm C*
+   74  rm D*
+   75  rm *
+   76  ls
+   77  cd data_files_with_header/
+   78  ls
+   79  cd Arabidopsis_protein/
+   80  mv * test_data_mummer/
+   81  mv * ../test_data_mummer/
+   82  mv * ../../test_data_mummer/
+   83  cd ..
+   84  ls
+   85  mv Celegans_protein/* ../../test_data_mummer/
+   86  mv Dmelanogaster_protein/* ../../test_data_mummer/
+   87  mv h/* ../../test_data_mummer/
+   88  mv h*/* ../../test_data_mummer/
+   89  mv U*/* ../../test_data_mummer/
+   90  mv h*/*1* ../../test_data_mummer/
+   91  mv h*/N* ../../test_data_mummer/
+   92  cd human_protein/
+   93  ls
+   94  mv NP_0* ../../../test_data_mummer/
+   95  mv NP_* ../../../test_data_mummer/
+   96  mv XP_* ../../../test_data_mummer/
+   97  mv YP_* ../../../test_data_mummer/
+   98  ls
+   99  cd ...
+  100  cd ..
+  101  ls
+  102  cd ..
+  103  rm -r data_files_with_header/
+  104  ls data*
+  105  cd ..
+  106  ls
+  107  cd Linux_Optimal_Covers/
+  108  ls
+  109  python3 ComputeOptimalCovers.py 
+  110  ls
+  111  cd optimal_cover_script/
+  112  ls
+  113  make
+  114  cd ..
+  115  ls
+  116  time (python3 ComputeOptimalCovers.py) 
+  117  ls
+  118  cd optimal_cover_script/
+  119  ls
+  120  cd bin/
+  121  ls
+  122  cd Release/
+  123  ls
+  124  cd ..
+  125  ls
+  126  ./premake5
+  127  make clean
+  128  make
+  129  cd ..
+  130  ls
+  131  time (python3 ComputeOptimalCovers.py) 
+  132  ls
+  133  cd optimal_cover_script/
+  134  ls
+  135  ./premake5 vs2019
+  136  ls
+  137  cd bin/Release/
+  138  ls
+  139  cd ..
+  140  ls
+  141  ./premake5 gmake2
+  142  make
+  143  cd ..
+  144  time (python3 ComputeOptimalCovers.py) 
+  145  ls
+  146  cd optimal_cover_script/
+  147  ls
+  148  make clean
+  149  ./premake5 vs2019
+  150  mske
+  151  make
+  152  cd ..
+  153  ls
+  154  time (python3 ComputeOptimalCovers.py) 
+  155  ls
+  156  cd optimal_cover_script/
+  157  ls
+  158  premake5 vs2019
+  159  ./premake5 vs2019
+  160  ./premake5 gmake
+  161  cd ..
+  162  cd optimal_cover_script/
+  163  make
+  164  cd ..
+  165  ls
+  166  time (python3 ComputeOptimalCovers.py )
+  167  cd optimal_cover_script/
+  168  make config=release
+  169  cd bin/Release/
+  170  ls
+  171  cd ..
+  172  ls
+  173  time (python3 ComputeOptimalCovers.py )
+  174  cd ..
+  175  ls
+  176  cd Linux_Optimal_Covers/
+  177  ls
+  178  cd optimal_cover_script/
+  179  ls
+  180  make clean
+  181  make
+  182  ls
+  183  cd bin/Release/
+  184  ls
+  185  cd ..\
+  186  cd ..
+  187  ls
+  188  cd ..
+  189  ls
+  190  python3 ComputeOptimalCovers.py 
+  191  cd ..
+  192  cd Linux_Optimal_Covers/
+  193  ls
+  194  cd optimal_cover_script/
+  195  ls
+  196  ./premake5 gmake
+  197  cd bin/Release/
+  198  ls
+  199  ./optimal_covers
+  200  optimal_covers
+  201  ./optimal_covers
+  202  cd ../..
+  203  ls
+  204  cd ..
+  205  cd optimal_cover_script/
+  206  make
+  207  cd ..
+  208  python3 ComputeOptimalCovers.py 
+  209  ls
+  210  cd optimal_cover_script/
+  211  ls
+  212  ./optimal_covers.make 
+  213  cd ..
+  214  cd optimal_cover_script/bin/Release/
+  215  ./optimal_covers
+  216  cd ../../
+  217  ls
+  218  make clean
+  219  ./premake5 make clean
+  220  ./premake5 gmake2
+  221  make
+  222  cd bin/Release/
+  223  ls
+  224  ./optimal_covers
+  225  make clean
+  226  cd ../../
+  227  ls
+  228  make clean
+  229  cd bin/Release/
+  230  ls
+  231  rm optimal_covers
+  232  ls
+  233  cd ../../
+  234  make
+  235  make config=release
+  236  make clean
+  237  make config=release clean
+  238  make
+  239  ./premake5 gmake2
+  240  cd bin/Release/
+  241  ls
+  242  cd ../../
+  243  ./premake5
+  244  ./premake5 vs2019
+  245  cd bin/Release/
+  246  ls
+  247  cd ../../
+  248  make
+  249  make config=release
+  250  cd bin/Release/
+  251  ls
+  252  ./optimal_covers
+  253  cd ../../\
+  254  cd ../../
+  255  make config=release cleann
+  256  make config=release clean
+  257  make config=release
+  258  cd bin/Release/
+  259  ls
+  260  ./optimal_covers
+  261  cd ../../
+  262  make config=release clean
+  263  make config=release
+  264  make config=release clean
+  265  make config=release
+  266  cd bin/Release/
+  267  ./optimal_covers
+  268  cd ../../
+  269  make config=release clean
+  270  make config=release
+  271  cd bin/Release/
+  272  ./optimal_covers
+  273  cd ../..
+  274  make config=release clean
+  275  make config=release
+  276  cd bin/Release/
+  277  ./optimal_covers
+  278  cd ../../
+  279  ls
+  280  make config=release
+  281  cd bin/Release/
+  282  ./optimal_covers
+  283  cd ../../
+  284  make config=release
+  285  make
+  286  make config=release
+  287  cd bin/Release/
+  288  ./optimal_covers
+  289  cd ../../
+  290  ls
+  291  make config=release
+  292  cd bin/Release/
+  293  ./optimal_covers
+  294  cd ../../
+  295  make config=release
+  296  cd bin/Release/
+  297  ./optimal_covers
+  298  cd ../../
+  299  make config=release
+  300  cd bin/Release/
+  301  ./optimal_covers
+  302  cd ../../
+  303  make config=release
+  304  cd bin/Release/
+  305  ./optimal_covers
+  306  cd ../../
+  307  make config=release
+  308  cd bin/Release/
+  309  ./optimal_covers
+  310  cd ../../
+  311  make config=release
+  312  cd bin/Release/
+  313  ./optimal_covers
+  314  cd ../../
+  315  make config=release
+  316  cd bin/Release/
+  317  ./optimal_covers
+  318  cd ../../
+  319  make config=release
+  320  cd bin/Release/
+  321  ./optimal_covers
+  322  cd ../../
+  323  make config=release
+  324  cd bin/Release/
+  325  ./optimal_covers
+  326  cd ../../
+  327  ls
+  328  cd ..
+  329  ls
+  330  python3 ComputeOptimalCovers.py 
+  331  cd optimal_cover_script/
+  332  make config=release
+  333  cd ..
+  334  python3 ComputeOptimalCovers.py 
+  335  cd optimal_cover_script/
+  336  make config=release
+  337  cd ../
+  338  ls
+  339  python3 ComputeOptimalCovers.py 
+  340  cd optimal_cover_script/bin/Release/
+  341  cd ../../
+  342  make config=release
+  343  cd bin/Release/
+  344  ./optimal_covers 1 1 1
+  345  ./optimal_covers 1 2 3
+  346  cd ../../
+  347  make config=release
+  348  cd bin/Release/
+  349  ./optimal_covers 1 2 3
+  350  cd ../../
+  351  make config=release
+  352  cd bin/Release/
+  353  ./optimal_covers 1 2 3
+  354  ./optimal_covers 1 1 1
+  355  cd ../../
+  356  cd bin/Release/
+  357  cd ../../
+  358  make config=release
+  359  cd bin/Release/
+  360  ./optimal_covers 1 1 1
+  361  ./optimal_covers 1 2 3
+  362  ./optimal_covers 10 20 30
+  363  cd ../../
+  364  make config=release
+  365  cd bin/Release/
+  366  ./optimal_covers 10 20 30
+  367  ./optimal_covers 1 2 3
+  368  ./optimal_covers 1 1 1
+  369  cd ../../
+  370  cd bin/Release/
+  371  cd ../../
+  372  make config=release
+  373  cd bin/Release/
+  374  ./optimal_covers 1 1 1
+  375  ./optimal_covers 1 2 3
+  376  ./optimal_covers 10 20 30
+  377  cd ../../
+  378  make config=release
+  379  cd bin/Release/
+  380  ./optimal_covers 1 2 3
+  381  cd ../../
+  382  make config=release
+  383  cd bin/Release/
+  384  ./optimal_covers 1 2 3
+  385  cd ../../
+  386  make config=release
+  387  cd ../../
+  388  cd Linux_Optimal_Covers/optimal_cover_script/
+  389  cd
+  390  ls
+  391  cd Documents/Dev/Linux_Optimal_Covers/optimal_cover_script/
+  392  ls
+  393  cd bin/R
+  394  cd ../../
+  395  make config=release
+  396  cd Linux_Optimal_Covers/optimal_cover_script/
+  397  make config=release
+  398  cd bin/R
+  399  cd bin/Release/
+  400  ./optimal_covers 1 2 3
+  401  cd ../../
+  402  make config=release
+  403  cd bin/Release/
+  404  ./optimal_covers 1 2 3
+  405  cd ../../
+  406  make config=release
+  407  cd bin/Release/
+  408  ./optimal_covers 1 2 3
+  409  ./optimal_covers 1 1 3
+  410  ./optimal_covers 0 1 3
+  411  ./optimal_covers 1 1 1
+  412  cd ../../
+  413  make config=release
+  414  cd bin/Release/
+  415  ./optimal_covers 1 1 1
+  416  cd ../../
+  417  ls
+  418  cd ..
+  419  ls
+  420  cd test_data/
+  421  ls
+  422  cd test_results/
+  423  ls
+  424  cd ArabidopsisAns/
+  425  ls
+  426  cd .
+  427  cd ..
+  428  cd Arabidopsis_protein/
+  429  ls
+  430  rm *
+  431  ls
+  432  cd ..
+  433  ls
+  434  cd Celegans_protein/
+  435  ls
+  436  rm *
+  437  cd ..
+  438  ls
+  439  cd Dmelanogaster_protein/
+  440  ls
+  441  cd ..
+  442  cd human_protein/
+  443  ls
+  444  rm *
+  445  ls ..
+  446  cd ..
+  447  cd humanAns/
+  448  ls
+  449  cd ../
+  450  ls
+  451  cd ..
+  452  \ls
+  453  ls
+  454  cd data_files/
+  455  ls
+  456  cd ..
+  457  ls
+  458  python3 ComputeOptimalCovers.py 
+  459  ls
+  460  cd optimal_cover_script/
+  461  make config=release
+  462  cd ..
+  463  ls
+  464  python3 ComputeOptimalCovers.py 
+  465  cd optimal_cover_script/
+  466  make config=release
+  467  cd ..
+  468  python3 ComputeOptimalCovers.py 
+  469  cd optimal_cover_script/bin/Release/
+  470  ./optimal_covers 1 0 0 /home/holly/Documents/Dev/Linux_Optimal_Covers/test_data/data_files/Arabidopsis_protein/NP_178975.1_25986.txt
+  471  cd ../../
+  472  make config=release
+  473  cd bin/Release/
+  474  ./optimal_covers 1 0 0 /home/holly/Documents/Dev/Linux_Optimal_Covers/test_data/data_files/Arabidopsis_protein/NP_178975.1_25986.txt
+  475  cd ../../
+  476  make config=release
+  477  cd bin/Release/
+  478  ./optimal_covers 1 0 0 /home/holly/Documents/Dev/Linux_Optimal_Covers/test_data/data_files/Arabidopsis_protein/NP_178975.1_25986.txt
+  479  ./optimal_covers 0 1 1 /home/holly/Documents/Dev/Linux_Optimal_Covers/test_data/data_files/Arabidopsis_protein/NP_178975.1_25986.txt
+  480  cd ../../
+  481  ./optimal_covers 1 0 0 /home/holly/Documents/Dev/Linux_Optimal_Covers/test_data/data_files/Arabidopsis_protein/NP_178975.1_25986.txt
+  482  python3 ComputeOptimalCovers.py 
+  483  cd ..
+  484  ls
+  485  python3 ComputeOptimalCovers.py 
+  486  cd optimal_cover_script/bin/R
+  487  cd optimal_cover_script/bin/Release/
+  488  ./optimal_covers 1 0 0 /home/holly/Documents/Dev/Linux_Optimal_Covers/test_data/data_files/Arabidopsis_protein/NP_178975.1_25986.txt
+  489  cd ../..
+  490  make config=release
+  491  cd bin/Release/
+  492  ./optimal_covers 1 0 0 /home/holly/Documents/Dev/Linux_Optimal_Covers/test_data/data_files/Arabidopsis_protein/NP_178975.1_25986.txt
+  493  cd ../..
+  494  python3 ComputeOptimalCovers.py 
+  495  cd ..
+  496  cd Linux_Optimal_Covers/
+  497  python3 ComputeOptimalCovers.py 
+  498  ls
+  499  cd test_data/
+  500  ls
+  501  cd test_results/
+  502  ls
+  503  cd Arabidopsis_protein/
+  504  ls
+  505  rm *
+  506  ls
+  507  cd ..
+  508  ls
+  509  cd optimal_cover_script/bin/R
+  510  cd optimal_cover_script/bin/Release/
+  511  cd ../../
+  512  ls
+  513  cd ..
+  514  ls
+  515  cd test_data/
+  516  ls
+  517  cd data_files/
+  518  ls
+  519  cd Arabidopsis_protein/
+  520  ls
+  521  cd ..
+  522  ls
+  523  cd Celegans_protein/
+  524  ls
+  525  cd ..
+  526  ls
+  527  cd ..
+  528  ls
+  529  cd test_results/
+  530  ls
+  531  cd ArabidopsisAns/
+  532  ls
+  533  cd ..
+  534  rm -r ArabidopsisAns/
+  535  ls
+  536  rm -r CelegansAns/
+  537  rm -r DmelanogasterAns/
+  538  r -r humanAns/
+  539  rm\ -r humanAns/
+  540  ls
+  541  cd UP000000803_7227_Drosophila_melanogaster/
+  542  ls
+  543  cd ..
+  544  rm -r humanAns/
+  545  ls
+  546  cd ..
+  547  ls
+  548  cd data_files/
+  549  ls
+  550  cd ../../
+  551  ls
+  552  cd ..
+  553  ls
+  554  cd MUMmer/
+  555  ls
+  556  cd test_data_mummer/
+  557  ls A0A0A1EI90_5*
+  558  cd ..
+  559  ls
+  560  cd Linux_Optimal_Covers/
+  561  ls
+  562  cd test_data/
+  563  ls
+  564  cd data_files/
+  565  ls
+  566  cd Arabidopsis_protein/
+  567  for x in *; cp * ../All; done;
+  568  for x in *; do cp * ../All; done;
+  569  cd ..
+  570  cd A
+  571  cd All/
+  572  ls
+  573  rm *
+  574  cd ..
+  575  ls
+  576  cd Arabidopsis_protein/
+  577  ls | wc -l
+  578  cd ../Celegans_protein/
+  579  ls | wc -l
+  580  cd ../Dmelanogaster_protein/
+  581  ls | wc -l
+  582  cd ../human_protein/
+  583  ls | wc -l
+  584  history > ../../../history.txt

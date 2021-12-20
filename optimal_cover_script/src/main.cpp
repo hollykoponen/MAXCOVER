@@ -1,28 +1,80 @@
-//
-// Created by vi.
-//
+// INCLUDES =======================================================================================
+
+#include "globals.h"
 #include <execution>
 #include <time.h>
-#include <algorithm>
-#include <iostream>
 #include <fstream>
-#include <vector>
-#include <set>
-#include <stack>
-#include <string>
 #include <iomanip>
-#include <map>
 #include "olp.h"
 #include "sais/sais.h"
 #include "lcpdc/dc_lcp_oracle.h"
 
+using namespace std;
+
+/* -------- Global Variables Declaration -------- */
+string input = "";
+int size = 0;
+vector<int> SA(0);
+vector<int> LCP(0);
+vector<int> RSF(0);
+vector<int> RSF_all(0);
+vector<int> R1(0);
+vector<int> RM(0);
+vector<int> ISA(0);
+vector<int> ILCP(0);
+vector<int> IRSF(0);
+vector<pair<int, int>> NE(0);
+
+string reversed_input = "";
+vector<int> RANK(0);
+vector<int> SA_rev(0);
+vector<int> LCS(0);
+vector<int> revRANK(0);
+
+vector<int> OLP(0);
+vector<int> RSPC(0);
+vector<int> OCList(0);
+
+// UTILS ==========================================================================================
+
+void PrintStack(stack<pair<int,int>> s)
+{
+    if (s.empty())
+        return;
+    pair<int,int> x = s.top();
+    s.pop();
+    PrintStack(s);
+    cout << "(" << x.first << "," << x.second << ") " << endl;;
+    s.push(x);
+}
+
+/* Driver function to sort the vector elements by second element of pairs in descending order */
+bool sortbysec(const pair<int,int> &a, const pair<int,int> &b) {return (a.second > b.second);}
+
+/* compute frequency (%) of optimal cover */
+int compute_oc_freq(int index) {
+    int frequency = (int)(((float)RSPC[index] / size) * 100);
+    return frequency;
+}
+
+#define watch(x) cout << (#x) << " = "
+
+#define printvar(x) cout << (#x) << " = " << x << endl;
+
+void PrintArray(vector<int> arr){
+    for(auto a : arr){
+        cout << a << ",";
+    } cout << endl; cout << endl;
+}
+
+/* -------- Compute Array Functions -------- */
 
 /* compute SA array of string */
-std::vector<int> compute_sa(const std::string &input) {
-    int *sa = (int*)malloc(input.size() * sizeof(int));
+vector<int> compute_sa(string input) {
+    int *sa = (int*)malloc(size * sizeof(int));
 
-    sais((unsigned char*)input.c_str(), sa, input.size());
-    std::vector<int> sa_vec(sa, sa + input.size());
+    sais((unsigned char*)input.c_str(), sa, size);
+    vector<int> sa_vec(sa, sa + size);
 
     free(sa);
     
@@ -30,19 +82,18 @@ std::vector<int> compute_sa(const std::string &input) {
 }
 
 /* compute LCP array of string */
-std::vector<int> compute_lcp(std::string &input, std::vector<int> &sa) {
+vector<int> compute_lcp(string input, vector<int> sa) {
 
-    int *sa_arr = (int*)calloc(sa.size(), sizeof(int));
-    for (int i = 0; i < sa.size(); ++i) {
+    int *sa_arr = (int*)calloc(size, sizeof(int));
+    for (int i = 0; i < size; ++i) {
         sa_arr[i] = sa[i];
     }
 
-    //dc_lcp_initialize((unsigned char*)input.c_str(), lcp.data(), lcp.size(), 2);
-    dc_lcp_initialize((unsigned char*)input.c_str(), sa_arr, sa.size(), 2);
+    dc_lcp_initialize((unsigned char*)input.c_str(), sa_arr, size, 2);
     dc_lcp_construct();
 
-    std::vector<int> lcp({ 0 });
-    lcp.insert(lcp.end(), sa_arr, sa_arr + sa.size() - 1);
+    vector<int> lcp({ 0 });
+    lcp.insert(lcp.end(), sa_arr, sa_arr + size - 1);
 
     dc_lcp_free();
     free(sa_arr);
@@ -50,20 +101,24 @@ std::vector<int> compute_lcp(std::string &input, std::vector<int> &sa) {
     return lcp;
 }
 
-/* compute RSF array of string */
-std::vector<int> compute_rsf(
-        std::string &input,
-        std::vector<int> &SA,
-        std::vector<int> &LCP //,
-        // std::vector<int> &R1,
-        // std::vector<int> &RM
-    ) {
+void runs_for_exrun(){
+    reversed_input = input;
+    reverse(reversed_input.begin(), reversed_input.end());
+    RANK = compute_rank(SA);
+    SA_rev = compute_sa(reversed_input);
+    LCS = compute_lcp(reversed_input, SA_rev);
+    revRANK = compute_rank(SA_rev);
+    runs = compute_runs(LCP, LCS, RANK, revRANK);
+}
 
-    std::vector<int> rsf(SA.size());
-    std::stack<int> st;
+/* compute RSF array of string */
+vector<int> compute_rsf() {
+
+    vector<int> rsf(size);
+    stack<int> st;
     int i = 0;
 
-    while (i < SA.size()) {
+    while (i < size) {
         if (st.empty()) {
             st.push(i);
         } else {
@@ -74,7 +129,6 @@ std::vector<int> compute_rsf(
             } else {
                 while (!st.empty() && LCP[st.top()] > LCP[i]) {
                     rsf[st.top()] = i - st.top();
-                    // RM[st.top()] = i - 1;
                     st.pop();
                 }
                 if (!st.empty() && LCP[st.top()] == LCP[i] && LCP[i] != 0) {
@@ -89,14 +143,14 @@ std::vector<int> compute_rsf(
 
     while (!st.empty()) {
         if (LCP[st.top()] != 0) {
-            rsf[st.top()] = SA.size() - st.top();
+            rsf[st.top()] = size - st.top();
         } else {
             rsf[st.top()] = 0;
         }
         st.pop();
     }
 
-    i = SA.size() - 1;
+    i = size - 1;
     while(i >= 0) {
         if(st.empty()) {
             st.push(i);
@@ -113,32 +167,20 @@ std::vector<int> compute_rsf(
                 st.push(i);
             }
         }
-        i = i - 1;
+        i--;
     }
-    
-    /*
-    for (auto i : R1.length()){
-        if (rsf[i] != 0){ 
-            R1[i] = RM[i] - RSF[i] + 1;
-        }
-    }
-    */
     
     return rsf;
 }
 
 /* compute RSF_all array of string */
-std::vector<int> compute_rsf_all(
-        std::string &input,
-        std::vector<int> &SA,
-        std::vector<int> &LCP
-    ) {
+vector<int> compute_rsf_all() {
     
-    std::vector<int> RSF_all(SA.size());
-    std::stack<int> st;
-    int i = 0;
+    vector<int> RSF_all(size);
+    stack<int> st;
 
-    while (i < SA.size()) {
+    int i = 0;
+    while (i < size) {
         if (st.empty()) {
             st.push(i);
         }
@@ -153,12 +195,12 @@ std::vector<int> compute_rsf_all(
                     st.push(i);
             }
         }
-        ++i;
+        i++;
     }
 
     while (!st.empty()) {
         if (LCP[st.top()] != 0) {
-            RSF_all[st.top()] = SA.size() - st.top();
+            RSF_all[st.top()] = size - st.top();
         } else {
             RSF_all[st.top()] = 0;
         }
@@ -166,7 +208,7 @@ std::vector<int> compute_rsf_all(
         st.pop();
     }
 
-    i = SA.size() - 1;
+    i = size - 1;
     while(i >= 0) {
         if(st.empty()) {
             st.push(i);
@@ -183,163 +225,27 @@ std::vector<int> compute_rsf_all(
                 st.push(i);
             }
         }
-        i = i - 1;
+        i--;
     }
-       
-    /*
-    std::cout << "RSF_all: ";
-    for (auto i : RSF_all){std::cout << i << ", "; }
-    std::cout << std::endl;
-    */
-    
+
     return RSF_all;
 }
 
-
-/* compute OLP array of string */
-/* QUADRATIC implementation */
-std::vector<int> compute_olp(
-    std::string &input,
-    std::vector<int> &SA,
-    std::vector<int> &LCP,
-    std::vector<int> &RSF,
-    std::vector<int> &R1,
-    std::vector<int> &RM
-    ) {
-
-    std::vector<int> RANK = compute_rank(SA);
-
-    std::string reverse(input);
-    std::reverse(reverse.begin(), reverse.end());
-    std::vector<int> SA_rev = compute_sa(reverse);
-
-    std::vector<int> LCS = compute_lcp(reverse, SA_rev);
-    // std::vector<int> LCS = {0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9}; 
-
-    std::vector<int> revRANK = compute_rank(SA_rev);
-
-    std::vector<std::set<std::pair<int, int>>> runs = compute_runs(LCP, LCS, RANK, revRANK);
-
-    std::vector<int> OLP = std::vector<int>(input.size(), 0);
-
-    for (int i = 0; i < OLP.size(); i++) {
-    // std::cout << i << " out of " << OLP.size() << " " << OLP.size() << "left..." << std::endl;
-        if (RSF[i] != 0) {
-            OLP[i] = compute_olpi(i, R1[i], RM[i], LCP, SA, runs, input);
-        }
-    }
-
-    return OLP;
-}
-
-
-
-
-/* compute OLP_nlogn array of string */
-/* O(nlogn) implementation */
-// TODO: Update header file to include OLP_nlogn functions
-// TODO: Update makefile to ensure it compiles with new functions
-std::vector<int> compute_OLP_nlogn(
-    std::string &input,
-    std::vector<int> &SA,
-    std::vector<int> &LCP,
-    std::vector<int> &RSF,
-    std::vector<int> &R1,
-    std::vector<int> &RM
-    ) {
-    
-    int i = 2;
-    std::vector<int> OLP_nlogn = std::vector<int>(input.size(), 0);
-    OLP_nlogn[1] = 0;
-    std::stack<pair<int,int>> stack; // stack of pairs (index, r1)
-    std::pair<int,int> top; // (index, r1)
-    // int runsHT.slots = 0; // # of slots filled in hashtable runsHT
-    std::map<int, std::vector<int>> runsHT; // Hashtable int Key, tuple r = (i, j, p) Value 
-    int Sorted_LI = 0; // lower index of sorted range in SA
-    int Sorted_UI = 0;  // upper index of sorted range in SA
-
-    //From quadratic code to use current exrun implementation
-    std::vector<int> RANK = compute_rank(SA);
-    std::string reverse(input);
-    std::reverse(reverse.begin(), reverse.end());
-    std::vector<int> SA_rev = compute_sa(reverse);
-    std::vector<int> LCS = compute_lcp(reverse, SA_rev);
-    std::vector<int> revRANK = compute_rank(SA_rev);
-    std::vector<std::set<std::pair<int, int>>> runs = compute_runs(LCP, LCS, RANK, revRANK);
-
-    while (i <= input.size()) {
-        if (stack.empty()){
-            stack.push( std::make_pair(i,i-1) );
-        }
-        else {
-
-            top = stack.top();
-            if (LCP[top.first] < LCP[i]) { stack.push( std::make_pair(i, i-1) ); }
-            else if (LCP[top.first] == LCP[i]) { OLP_nlogn[i] = 0; }
-            else{
-                if (LCP[i] <= 1){
-                    runsHT.clear();  // clears the contents of hash table; original: runsHT.slots = 0
-                    Sorted_LI = 0; 
-                    Sorted_UI = 0;
-                }
-                while (LCP[top.first] > LCP[i]) {
-                    OLP_nlogn[top.first] = 0;
-
-                    std::cout << "1" << std::endl;
-
-                    if(LCP[top.first] != 1) {
-                        
-                        std::cout << "2" << std::endl;
-
-                        compute_Ru(top.first, top.second, i-1, Sorted_LI, Sorted_UI, SA, LCP, runsHT, runs); 
-                        
-                        std::cout << "3" << std::endl;
-
-                        OLP_nlogn[top.first] = compute_OLP_nlogn_at_index(top.first, LCP, runsHT);
-                        compute_sorted_range(Sorted_LI, Sorted_UI, top.second, i-1); 
-                    }
-
-                    std::cout << "4" << std::endl;
-                    exit(0);
-
-                    stack.pop();
-                    top = stack.top();
-                }
-                if (top.first == LCP[i]) { OLP_nlogn[i] = 0; }
-                else { stack.push( std::make_pair(i, top.first-1) ); }
-            }
-        }
-        i++;
-    }
-    compute_OLP_nlogn_stack(i, Sorted_LI, Sorted_UI, top, SA, LCP, OLP_nlogn, stack, runsHT, runs); 
-    return OLP_nlogn;
-}
-
-
-
 /* compute RSPC array of string */
-std::vector<int> compute_rspc(
-    const std::string &input,
-    std::vector<int> &LCP,
-    std::vector<int> &RSF,
-    std::vector<int> &OLP
-) {
+vector<int> compute_rspc() {
 
-    std::vector<int> RSPC(input.size(), 0);
+    vector<int> rspc(size);
 
-    for (int i = 0; i < input.size(); i++) {
-        RSPC[i] = RSF[i] * LCP[i] - OLP[i];
+    for (int i = 0; i < size; i++) {
+        rspc[i] = RSF[i] * LCP[i] - OLP[i];
     }
 
-    return RSPC;
+    return rspc;
 }
 
 
 /* compute all optimal covers of a string */
-std::vector<int> compute_optimal_covers(
-    const std::vector<int> &LCP,
-    std::vector<int> &RSPC
-) {
+vector<int> compute_optimal_covers() {
     int max_pc = 1;
     int max_cover_length = 0;
     std::vector<int> OCList(RSPC.size()); // allocate memory to OCList array
@@ -376,20 +282,19 @@ std::vector<int> compute_optimal_covers(
     return OCListarr;
 }
 
-std::vector<int> compute_top_ten_covers(
-        const std::vector<int> &LCP,
-        std::vector<int> &RSPC
-) {
-    std::vector<int> out;
-//    int max_val = LCP[0];
+/* -------- Flags Functions -------- */
+
+vector<int> compute_top_ten_covers() {
+    vector<int> out;
     int min_vi = 0;
-    for (int i = 0; i < LCP.size(); ++i) {
+
+    for (int i = 0; i < size; ++i) {
         if (out.size() < 10) {
             out.push_back(i);
             min_vi = (LCP[out[min_vi]] > LCP[i]) ? (out.size() - 1) : min_vi;
         } else if (LCP[i] > LCP[out[min_vi]]) {
             out[min_vi] = i;
-            min_vi = std::min_element(out.begin(), out.end(), [&LCP](const int &a, const int &b) {
+            min_vi = min_element(out.begin(), out.end(), [](const int &a, const int &b) {
                 return LCP[a] < LCP[b];
             }) - out.begin();
         }
@@ -397,62 +302,30 @@ std::vector<int> compute_top_ten_covers(
     return out;
 }
 
-/* compute frequency (%) of optimal cover */
-int compute_oc_freq(int index, std::vector<int> &RSPC) {
-    int frequency = (int)(((float)RSPC[index] / RSPC.size()) * 100);
-    return frequency;
-}
-
-/* Driver function to sort the vector elements by second element of pairs in descending order */
-bool sortbysec(const pair<int,int> &a,
-              const pair<int,int> &b)
-{
-    return (a.second > b.second);
-}
-
 /* compute non-extendible repeating substrings in a string longer than repeat_size*/
-std::vector<std::pair<int, int>> compute_ne(
-        std::vector<int> &SA, 
-        std::vector<int> &LCP, 
-        std::vector<int> &RSF_all, 
-        std::vector<int> &R1,
-        std::vector<int> &RM, 
-        int repeat_size)
-    {
-    std::vector<int> ISA = std::vector<int>(SA.size());
-    std::vector<int> ILCP = std::vector<int>(LCP.size());
-    std::vector<int> IRSF = std::vector<int>(RSF_all.size());
+vector<pair<int, int>> compute_ne(int repeat_size) {
+    
+    ISA.reserve(size);
+    ILCP.reserve(size);
+    IRSF.reserve(size);
         
-    for (int i = 0; i < SA.size(); i++){ ISA[SA[i]] = i;}
-    for (int i = 0; i < LCP.size(); i++){ ILCP[i] = LCP[ISA[i]];}
-    for (int i = 0; i < RSF_all.size(); i++){ IRSF[i] = RSF_all[ISA[i]];}
-    
-    /*
-    std::cout << "ISA: ";
-    for (auto i : ISA){std::cout << i << ", "; }
-    std::cout << std::endl;
-
-    std::cout << "ILCP: ";
-    for (auto i : ILCP){std::cout << i << ", "; }
-    std::cout << std::endl;
+    for (int i = 0; i < size; i++){ 
+        ISA[SA[i]] = i;
+        ILCP[i] = LCP[ISA[i]];
+        IRSF[i] = RSF_all[ISA[i]];
+    }
         
-    std::cout << "IRSF: ";
-    for (auto i : IRSF){std::cout << i << ", "; }
-    std::cout << std::endl;
-    */
-    
-    std::vector<std::pair<int, int>> NE;
-    
     if ((IRSF[0] != 0) && (ILCP[0] >= repeat_size)){
         //Output NE repeating substring pair (1, ILCP[1])
-        NE.push_back(std::make_pair(ISA[0], ILCP[0]));
+        NE.push_back(make_pair(ISA[0], ILCP[0]));
     }
+
     int i = 1;
-    while (i < SA.size()){
+    while (i < size){
         if ((IRSF[i] != 0) && (ILCP[i] >= repeat_size) && (RM[ISA[i]] != 0)){
             if (not (IRSF[i]==IRSF[i-1] && ILCP[i]+1 == ILCP[i-1])){
                 //Output NE repeating substring pair (i, i+ILCP[i]-1)
-                NE.push_back(std::make_pair(ISA[i], ILCP[i]));
+                NE.push_back(make_pair(ISA[i], ILCP[i]));
             }
         }
         i++;
@@ -460,157 +333,97 @@ std::vector<std::pair<int, int>> compute_ne(
     
     sort(NE.begin(), NE.end(), sortbysec);
     
-    /*
-    std::cout << "NE: ";
-    for (int i = 0; i < NE.size(); i++){
-        std::cout << "(" << NE[i].first << "," << NE[i].second << ");";
-    }
-    std::cout << std::endl;
-    */
-    
-    //std::vector<std::pair<int, int>> NE_Matches;
-    
-    /*
-    i = 0;
-    //set<int> NE_indices;
-    while (i < NE.size()){
-        //NE_indices.insert(NE[i].first);
-        for(int r = R1[ISA[NE[i].first]]; r <= RM[ISA[NE[i].first]]; r++){ 
-            //if(not (NE_indices.find(SA[r]) != NE_indices.end())){
-                //NE_indices.insert(SA[r]);
-                NE_Matches.push_back(std::make_pair(SA[r], NE[i].second));
-            //}
-        }
-        i++;
-    }
-    */
-        
-    //sort(NE_Matches.begin(), NE_Matches.end(), sortbysec);
-    
-    /*std::cout << "NE: ";
-    for (int i = 0; i < NE.size(); i++){
-        std::cout << "(" << NE[i].first << "," << NE[i].second << ");";
-    }
-    std::cout << std::endl;
-    */
-    //return NE_Matches;
     return NE;
 }
 
 
+/* -------- Procedures -------- */
 
 /* compute optimal covers, the main script */
-void Compute_OC_main(std::string input, int top_ten){
+void Compute_OC_main(int top_ten){
+    
     auto t_start = clock();
-    std::vector<int> SAarr = compute_sa(input);
-    std::vector<int> LCParr = compute_lcp(input, SAarr);
-    std::vector<int> RSFarr = compute_rsf(input, SAarr, LCParr);
-    std::vector<int> R1 = compute_r1(LCParr, RSFarr);
-    std::vector<int> RM = compute_rm(R1, RSFarr);    
-    std::vector<int> OLParr =  compute_OLP_nlogn(input, SAarr, LCParr, RSFarr, R1, RM);
-    //std::vector<int> OLParr =  compute_olp(input, SAarr, LCParr, RSFarr, R1, RM);
-    std::vector<int> RSPCarr = compute_rspc(input, LCParr, RSFarr, OLParr);
-    std::vector<int> OCListarr = compute_optimal_covers(LCParr, RSPCarr);
-    std::vector<int> top_ten_covers;
+    
+    SA = compute_sa(input);
+    LCP = compute_lcp(input, SA);
+    RSF = compute_rsf();
+    compute_R1();
+    compute_RM();    
+
+    PrintArray(SA); PrintArray(LCP); PrintArray(RSF);
+
+
+    //OLP =  compute_olp(runs);
+    OLP =  compute_OLP_nlogn(runs);
+    RSPC = compute_rspc();
+    OCList = compute_optimal_covers();
+
+    vector<int> top_ten_covers;
+    
     if(top_ten == 1){
-        top_ten_covers = compute_top_ten_covers(LCParr, RSPCarr);
+        top_ten_covers = compute_top_ten_covers();
     }
+    
     auto end = clock();
 
 
     /* print all Optimal Covers and frequency */
-    std::cout << "string of length " << input.size() << std::endl;
-    std::cout << "\nOptimal Covers:" << std::endl;
-    for (auto a : OCListarr) {
-        int start = SAarr[a];
-        int length = LCParr[a];
-        std::cout << "\t" << input.substr(start, length) << std::endl; 
-        std::cout << "\tOC length=" << length << std::endl;
+    cout << "string of length " << size << endl;
+    cout << "\nOptimal Covers:" << endl;
+    for (auto a : OCList) {
+        int start = SA[a];
+        int length = LCP[a];
+        cout << "\t" << input.substr(start, length) << endl; 
+        cout << "\tOC length=" << length << endl;
 
-        int OC_freq = compute_oc_freq(a, RSPCarr);
-        std::cout << "\tnumber of positions covered=" << RSPCarr[a]
+        int OC_freq = compute_oc_freq(a);
+        cout << "\tnumber of positions covered=" << RSPC[a]
                   << "\n\t% covered = " << OC_freq << "%"
-                  << "\n\ttime elapsed " << ((float)(end - t_start)) / CLOCKS_PER_SEC << " seconds\n" << std::endl;
+                  << "\n\ttime elapsed " << ((float)(end - t_start)) / CLOCKS_PER_SEC << " seconds\n" << endl;
     }
     
     if(top_ten == 1){
-        std::cout << "Top Ten Covers: " << std::endl;
+        cout << "Top Ten Covers: " << endl;
         for (auto a : top_ten_covers){
-            std::cout << "out[min_vi] = " << a << " Position: " << SAarr[a] << " of length: " << LCParr[a] << std::endl;
+            cout << "out[min_vi] = " << a << " Position: " << SA[a] << " of length: " << LCP[a] << endl;
         }
     }
     
 }
 
-
 /* compute repeat matches, the main script, using repeat_size (int) to determine minimum repeat length */
-void Compute_RepeatMatches(std::string input, int repeat_size){
+void Compute_RepeatMatches(int repeat_size){
     auto t_start = clock();
-    std::vector<int> SAarr = compute_sa(input);
-    std::vector<int> LCParr = compute_lcp(input, SAarr);
-    std::vector<int> RSFarr = compute_rsf(input, SAarr, LCParr);
-    std::vector<int> RSF_all = compute_rsf_all(input, SAarr, LCParr);
-    std::vector<int> R1 = compute_r1(LCParr, RSFarr);
-    std::vector<int> RM = compute_rm(R1, RSFarr);
-    std::vector<std::pair<int, int>> NE = compute_ne(SAarr, LCParr, RSF_all, R1, RM, repeat_size);
+    SA = compute_sa(input);
+    LCP = compute_lcp(input, SA);
+    RSF = compute_rsf();
+    RSF_all = compute_rsf_all();
+    compute_R1();
+    compute_RM();
+    NE = compute_ne(repeat_size);
     auto end = clock();
     
-    /*
-    std::cout << "SA: ";
-    for (auto i : SAarr){std::cout << i << ", "; }
-    std::cout << std::endl;
-
-    std::cout << "LCP: ";
-    for (auto i : LCParr){std::cout << i << ", "; }
-    std::cout << std::endl;
-    
-    std::cout << "RSF: ";
-    for (auto i : RSFarr){std::cout << i << ", "; }
-    std::cout << std::endl;
-    
-    std::cout << "R1: ";
-    for (auto i : R1){std::cout << i << ", "; }
-    std::cout << std::endl;
-    
-    std::cout << "RM: ";
-    for (auto i : RM){std::cout << i << ", "; }
-    std::cout << std::endl;
-    */
-    
     /* print the repeat matches */
-    std::cout << "Long Exact Matches:" << std::endl;
-    std::cout << std::right << std::setw(10) << "Start1" << std::setw(10) << "Start2" << std::setw(10) << "Length" << std::endl;
+    cout << "Long Exact Matches:" << endl;
+    cout << right << setw(10) << "Start1" << setw(10) << "Start2" << setw(10) << "Length" << endl;
     
-    /*
-    for (int i = 0; i < input.length(); i++){
-        if ((RM[i] != 0) && (LCParr[i] >= repeat_size)){
-            for(int r = R1[i]+1; r <= RM[i]; r++){
-                int Start1 = SAarr[R1[i]]+1; // SAarr[R1]
-                int Start2 = SAarr[r]+1; // SAarr[RM] for (all R1+1 to RM) loop
-                int Length = LCParr[i]; 
-                std::cout << std::right << std::setw(10) << Start1 << std::setw(10) << Start2 << std::setw(10) << Length << std::endl;            
-            }
-        }
-    }
-    */
-
-    std::vector<int> Reported;
+    vector<int> Reported;
     int start1, start2;
     
     for (int i = 0; i < NE.size(); i++){
-        //std::cout << "NE[" << i << "]: " << NE[i].first << "," << NE[i].second << std::endl;
+        //cout << "NE[" << i << "]: " << NE[i].first << "," << NE[i].second << endl;
         for(int r1 = R1[NE[i].first]; r1 <= RM[NE[i].first]; r1++){
-            start1 = SAarr[r1];
-            //std::cout << "Start1: " << start1 << std::endl;
-            if (std::find(Reported.begin(), Reported.end(), start1) == Reported.end()){
+            start1 = SA[r1];
+            //cout << "Start1: " << start1 << endl;
+            if (find(Reported.begin(), Reported.end(), start1) == Reported.end()){
                 for(int r2 = r1; r2 <= RM[NE[i].first]; r2++){
-                    start2 = SAarr[r2];
+                    start2 = SA[r2];
                     if(start1 != start2){
-                        std::cout << std::right;
-                        std::cout << std::setw(10) << start1+1;
-                        std::cout << std::setw(10) << start2+1; 
-                        std::cout << std::setw(10) << NE[i].second;
-                        std::cout << std::endl;
+                        cout << right;
+                        cout << setw(10) << start1+1;
+                        cout << setw(10) << start2+1; 
+                        cout << setw(10) << NE[i].second;
+                        cout << endl;
                     }
                 }
             }
@@ -618,67 +431,28 @@ void Compute_RepeatMatches(std::string input, int repeat_size){
         }
     }
     
-
-  /*    
-    int Start1 = NE[0].first;
-    int Start2;
-    int Length = NE[0].second;
-
-    int i = 1;    
-    while (i < NE.size()){
-        if(NE[i].second == Length){
-            Start2 = NE[i].first;            
-            std::cout << std::right << std::setw(10) << Start1+1 << std::setw(10) << Start2+1 << std::setw(10) << Length << std::endl;
-        }
-        else{
-            Start1 = NE[i].first;
-            Length = NE[i].second;
-        }
-        i++;        
-    }
-  */  
-    
-    // std::cout << "Repeating Substring" << i << "of Length" << NE[i].second << "=" << for loop {11, 1, 7} << std::endl;
-    
 }
 
 int main(int argc, char* argv[]) {
+
+    int Compute_OC = atoi(argv[1]); // 1 = True; 0 = False;
+    int top_ten = atoi(argv[2]); // 1 = True; 0 = False;
+    int RepeatMatches = atoi(argv[3]); // 1 = True; 0 = False;
+    int repeat_size = atoi(argv[4]); // int, 1+
     
-    /*std::string input = "aababcaba";
-    Compute_OC_main(input);
-    Compute_RepeatMatches(input, 1);
-
-    input = "abacababacabacaba";
-    Compute_OC_main(input);
-    Compute_RepeatMatches(input, 1);
-    */
-
-    int Compute_OC = std::atoi(argv[1]); // 1 = True; 0 = False;
-    int top_ten = std::atoi(argv[2]); // 1 = True; 0 = False;
-    int RepeatMatches = std::atoi(argv[3]); // 1 = True; 0 = False;
-    int repeat_size = std::atoi(argv[4]); // int, 1+
-    
-    /*
-    std::cout << "Compute_OC: " << Compute_OC << std::endl;
-    std::cout << "RepeatMatches: " << RepeatMatches << std::endl;
-    std::cout << "repeat_size: " << repeat_size << std::endl;
-    */
-        
-
         
     /* initialize input string*/
-    std::ifstream ifs(argv[5]);
-    std::string input_EOL(
-        (std::istreambuf_iterator<char>(ifs)),
-        (std::istreambuf_iterator<char>())
+    ifstream ifs(argv[5]);
+    string input_EOL(
+        (istreambuf_iterator<char>(ifs)),
+        (istreambuf_iterator<char>())
     );
-    std::string input = input_EOL.substr(0, input_EOL.size()-1);
-    //std::cout << "Input String Length: " << input.size() << std::endl;
     
-    if (Compute_OC == 1) {Compute_OC_main(input, top_ten);}
-    if (RepeatMatches == 1){Compute_RepeatMatches(input, repeat_size);}
+    input = input_EOL.substr(0, input_EOL.size()-1);
+    size = input.size();
     
-    //std::cout << "Input String: \n\t" << input << std::endl;
+    if (Compute_OC == 1) {Compute_OC_main(top_ten);}
+    if (RepeatMatches == 1){Compute_RepeatMatches(repeat_size);}
     
     return 0;
     

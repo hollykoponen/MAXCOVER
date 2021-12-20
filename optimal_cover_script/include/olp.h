@@ -1,138 +1,84 @@
-//
-// Created by vi.
-//
-
 #ifndef OPTIMAL_COVERS_OLP_H
 #define OPTIMAL_COVERS_OLP_H
 
 // INCLUDES ====================================================================
 
+#include "globals.h"
 #include <memory>
-#include <vector>
-#include <set>
-#include <string>
 #include "RMQ/RMQ_succinct.hpp"
+
+using namespace std;
 
 // UTILS =======================================================================
 
-int get_max(std::vector<std::vector<int>> &vec);
+int get_max(vector<vector<int>> &vec);
+void reset_SA_temp();
+void set_OLP_nlogn_variables(
+    int &lcp_i_source, 
+    int top_index_source
+    );
 
 // COMPUTE OLP_nlogn O(nlogn) Implementation ===========================================================
 
-void compute_OLP_nlogn_stack(
+vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src);
+void remove_non_eligible_runs();
+void eligible_run(  
     int i,
-    int Sorted_LI, 
-    int Sorted_UI,
-    std::pair<int, int> &top,
-    std::vector<int> &SA,
-    std::vector<int> &LCP,
-    std::vector<int> &OLP_nlogn,
-    std::stack<std::pair<int,int>> &stack,
-    std::map<int, std::vector<int>> &runsHT,
-    std::vector<std::set<std::pair<int, int>>> runs  
+    int j,
+    int &sorted_i,
+    int &sorted_j
     );
-void compute_sorted_range(
-    int &Sorted_LI, 
-    int &Sorted_UI, 
-    int r1, 
-    int rm
-    );
-void compute_Ru(
-    int &index, 
-    int &i, // (i,j) is the range pair (r1 .. rm) for u
-    int j, 
-    int &sorted_i, 
-    int &sorted_j,
-    std::vector<int> &SA,
-    std::vector<int> &LCP,
-    std::map<int,std::vector<int>> &runsHT,
-    std::vector<std::set<std::pair<int, int>>> runs 
-    );
-int compute_OLP_nlogn_at_index(
-    int index,
-    std::vector<int> &LCP,
-    std::map<int, std::vector<int>> &runsHT
-    );
-void sort(
-    int index, 
-    int i, 
-    int j, 
-    int prev_i, 
-    int prev_j, 
-    int len_u,
-    std::vector<int> &SA,
-    std::vector<int> &LCP,
-    std::map<int, std::vector<int>> &runsHT,
-    std::vector<std::set<std::pair<int, int>>> runs 
-    ); 
+void copy_sort_compute(int x, int y);
 void compute_eruns(
-    int index, 
     int i, 
-    int j, 
-    std::vector<int> &LCP,
-    std::vector<int> &SA_temp,
-    std::map<int, std::vector<int>> &runsHT,
-    std::vector<std::set<std::pair<int, int>>> runs 
+    int j
     );
 void merge_compute_eruns(
     int i1, 
     int j1, 
     int i2, 
-    int j2,
-    std::vector<int> &SA_temp,
-    std::vector<int> &LCP,
-    std::map<int, std::vector<int>> &runsHT,
-    int index,
-    int len_u,
-    std::vector<std::set<std::pair<int, int>>> runs 
+    int j2
     );
-std::vector<int> exrun_nlogn(
-    const int &i,
-    const int &j,
-    const int &lcp_i,
-    std::vector<std::set<std::pair<int, int>>> &runs
-);
+int compute_OLP_nlogn_at_index();
+// void compute_sorted_range(
+//     int r1, 
+//     int rm
+//     );
 
 // COMPUTE OLP Quadratic Implementation ===========================================================
 
-std::vector<int> compute_rank(std::vector<int>&);
+void runs_for_exrun();
+vector<int> compute_olp(vector<set<pair<int, int>>> runs_src);
+vector<int> compute_rank(vector<int> &sa);
 int lc(
     RMQ_succinct &,
     const std::vector<int> &,
     const std::vector<int>&,
     const int&,
     const int&
-);
-std::vector<std::set<std::pair<int, int>>> compute_runs(
-    std::vector<int>&,
-    std::vector<int>&,
-    std::vector<int>&,
-    std::vector<int>&
-);
-std::vector<int> compute_r1(std::vector<int>&, std::vector<int>&);
-std::vector<int> compute_rm(
-    std::vector<int>&,
-    std::vector<int>&
-);
-std::vector<int> exrun(
-    const int&,
-    const int&,
-    const int&,
-    std::vector<std::set<std::pair<int, int>>>&
-);
+    );
+vector<set<pair<int, int>>> compute_runs(
+    vector<int> &lcp,
+    vector<int> &lcs,
+    vector<int> &rank,
+    vector<int> &rev_rank
+    );
+void compute_R1();
+void compute_RM();
+vector<int> exrun(
+    const int &i,
+    const int &j,
+    const int &lcp_i
+    );
 int compute_frequency(
-    std::vector<int> r, 
+    vector<int> r, 
     int i_prime, 
     int j_prime
-);
+    );
 int compute_olpi(
-    int&,
-    int&,
-    int&,
-    std::vector<int>&,
-    std::vector<int>&,
-    std::vector<std::set<std::pair<int, int>>>&,
-    std::string&
-);
+    int &index,
+    int &r1,
+    int &rm
+    ); 
 
 #endif //OPTIMAL_COVERS_OLP_H
