@@ -13,7 +13,7 @@ using namespace std;
 
 /* -------- Global Variables Declaration -------- */
 string input = "";
-int size = 0;
+int input_size = 0;
 vector<int> SA(0);
 vector<int> LCP(0);
 vector<int> RSF(0);
@@ -53,7 +53,7 @@ bool sortbysec(const pair<int,int> &a, const pair<int,int> &b) {return (a.second
 
 /* compute frequency (%) of optimal cover */
 int compute_oc_freq(int index) {
-    int frequency = (int)(((float)RSPC[index] / size) * 100);
+    int frequency = (int)(((float)RSPC[index] / input_size) * 100);
     return frequency;
 }
 
@@ -71,10 +71,10 @@ void PrintArray(vector<int> arr){
 
 /* compute SA array of string */
 vector<int> compute_sa(string input) {
-    int *sa = (int*)malloc(size * sizeof(int));
+    int *sa = (int*)malloc(input_size * sizeof(int));
 
-    sais((unsigned char*)input.c_str(), sa, size);
-    vector<int> sa_vec(sa, sa + size);
+    sais((unsigned char*)input.c_str(), sa, input_size);
+    vector<int> sa_vec(sa, sa + input_size);
 
     free(sa);
     
@@ -84,16 +84,16 @@ vector<int> compute_sa(string input) {
 /* compute LCP array of string */
 vector<int> compute_lcp(string input, vector<int> sa) {
 
-    int *sa_arr = (int*)calloc(size, sizeof(int));
-    for (int i = 0; i < size; ++i) {
+    int *sa_arr = (int*)calloc(input_size, sizeof(int));
+    for (int i = 0; i < input_size; ++i) {
         sa_arr[i] = sa[i];
     }
 
-    dc_lcp_initialize((unsigned char*)input.c_str(), sa_arr, size, 2);
+    dc_lcp_initialize((unsigned char*)input.c_str(), sa_arr, input_size, 2);
     dc_lcp_construct();
 
     vector<int> lcp({ 0 });
-    lcp.insert(lcp.end(), sa_arr, sa_arr + size - 1);
+    lcp.insert(lcp.end(), sa_arr, sa_arr + input_size - 1);
 
     dc_lcp_free();
     free(sa_arr);
@@ -114,11 +114,11 @@ void runs_for_exrun(){
 /* compute RSF array of string */
 vector<int> compute_rsf() {
 
-    vector<int> rsf(size);
+    vector<int> rsf(input_size);
     stack<int> st;
     int i = 0;
 
-    while (i < size) {
+    while (i < input_size) {
         if (st.empty()) {
             st.push(i);
         } else {
@@ -143,14 +143,14 @@ vector<int> compute_rsf() {
 
     while (!st.empty()) {
         if (LCP[st.top()] != 0) {
-            rsf[st.top()] = size - st.top();
+            rsf[st.top()] = input_size - st.top();
         } else {
             rsf[st.top()] = 0;
         }
         st.pop();
     }
 
-    i = size - 1;
+    i = input_size - 1;
     while(i >= 0) {
         if(st.empty()) {
             st.push(i);
@@ -176,11 +176,11 @@ vector<int> compute_rsf() {
 /* compute RSF_all array of string */
 vector<int> compute_rsf_all() {
     
-    vector<int> RSF_all(size);
+    vector<int> RSF_all(input_size);
     stack<int> st;
 
     int i = 0;
-    while (i < size) {
+    while (i < input_size) {
         if (st.empty()) {
             st.push(i);
         }
@@ -200,7 +200,7 @@ vector<int> compute_rsf_all() {
 
     while (!st.empty()) {
         if (LCP[st.top()] != 0) {
-            RSF_all[st.top()] = size - st.top();
+            RSF_all[st.top()] = input_size - st.top();
         } else {
             RSF_all[st.top()] = 0;
         }
@@ -208,7 +208,7 @@ vector<int> compute_rsf_all() {
         st.pop();
     }
 
-    i = size - 1;
+    i = input_size - 1;
     while(i >= 0) {
         if(st.empty()) {
             st.push(i);
@@ -234,9 +234,9 @@ vector<int> compute_rsf_all() {
 /* compute RSPC array of string */
 vector<int> compute_rspc() {
 
-    vector<int> rspc(size);
+    vector<int> rspc(input_size);
 
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < input_size; i++) {
         rspc[i] = RSF[i] * LCP[i] - OLP[i];
     }
 
@@ -288,7 +288,7 @@ vector<int> compute_top_ten_covers() {
     vector<int> out;
     int min_vi = 0;
 
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < input_size; ++i) {
         if (out.size() < 10) {
             out.push_back(i);
             min_vi = (LCP[out[min_vi]] > LCP[i]) ? (out.size() - 1) : min_vi;
@@ -305,11 +305,11 @@ vector<int> compute_top_ten_covers() {
 /* compute non-extendible repeating substrings in a string longer than repeat_size*/
 vector<pair<int, int>> compute_ne(int repeat_size) {
     
-    ISA.reserve(size);
-    ILCP.reserve(size);
-    IRSF.reserve(size);
+    ISA.reserve(input_size);
+    ILCP.reserve(input_size);
+    IRSF.reserve(input_size);
         
-    for (int i = 0; i < size; i++){ 
+    for (int i = 0; i < input_size; i++){ 
         ISA[SA[i]] = i;
         ILCP[i] = LCP[ISA[i]];
         IRSF[i] = RSF_all[ISA[i]];
@@ -321,7 +321,7 @@ vector<pair<int, int>> compute_ne(int repeat_size) {
     }
 
     int i = 1;
-    while (i < size){
+    while (i < input_size){
         if ((IRSF[i] != 0) && (ILCP[i] >= repeat_size) && (RM[ISA[i]] != 0)){
             if (not (IRSF[i]==IRSF[i-1] && ILCP[i]+1 == ILCP[i-1])){
                 //Output NE repeating substring pair (i, i+ILCP[i]-1)
@@ -368,7 +368,7 @@ void Compute_OC_main(int top_ten){
 
 
     /* print all Optimal Covers and frequency */
-    cout << "string of length " << size << endl;
+    cout << "string of length " << input_size << endl;
     cout << "\nOptimal Covers:" << endl;
     for (auto a : OCList) {
         int start = SA[a];
@@ -449,7 +449,7 @@ int main(int argc, char* argv[]) {
     );
     
     input = input_EOL.substr(0, input_EOL.size()-1);
-    size = input.size();
+    input_size = input.size();
     
     if (Compute_OC == 1) {Compute_OC_main(top_ten);}
     if (RepeatMatches == 1){Compute_RepeatMatches(repeat_size);}

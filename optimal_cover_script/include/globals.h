@@ -15,7 +15,7 @@ using namespace std;
 
 /* -------- Global Variables Declaration -------- */
 extern string input;
-extern int size;
+extern int input_size;
 extern int sorted_i; 
 extern int sorted_j;  
 extern vector<int> SA;

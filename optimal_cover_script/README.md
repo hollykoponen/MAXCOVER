@@ -16,3 +16,6 @@ Linux:
 ```bash
 ./premake5 gmake2
 ```
+
+To generate a VS 2015 Solution on Windows you run: 
+    premake5 vs2015

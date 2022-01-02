@@ -32,7 +32,7 @@ int get_max(vector<vector<int>> &vec) {
 }
 
 void reset_SA_temp(){
-    vector<int> SA_star(size, 0);
+    vector<int> SA_star(input_size, 0);
     SA_temp = SA_star;
 }
 
@@ -60,7 +60,7 @@ void PrintArrays(vector<int> arr){
 vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src) {
 
     runs = runs_src;
-    vector<int> OLP_nlogn = vector<int>(size, 0);
+    vector<int> OLP_nlogn = vector<int>(input_size, 0);
     OLP_nlogn[1] = 0;
 
     stack<pair<int,int>> st; // stack of pairs (index, r1)
@@ -72,7 +72,7 @@ vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src) {
     int sorted_j = 0;  // upper index of sorted range in SA_star
 
     int i = 1;
-    while (i < size) {
+    while (i < input_size) {
         if (st.empty()) { st.push( make_pair(i,i-1)); }
         else {
             top = st.top();
@@ -393,11 +393,11 @@ int compute_OLP_nlogn_at_index() {
 vector<int> compute_olp(vector<set<pair<int, int>>> runs_src) {
 
     runs = runs_src;
-    vector<int> olp(size,0);
+    vector<int> olp(input_size,0);
     reset_SA_temp();
     runs_for_exrun();
-    OLP.reserve(size);
-    for (int i = 0; i < size; i++) {
+    OLP.reserve(input_size);
+    for (int i = 0; i < input_size; i++) {
         if (RSF[i] != 0) {
             olp[i] = compute_olpi(i, R1[i], RM[i]);
         }
@@ -409,7 +409,7 @@ vector<int> compute_olp(vector<set<pair<int, int>>> runs_src) {
 vector<int> compute_rank(vector<int> &sa) {
     vector<int> rank(sa.size());
 
-    for (int i = 0; i < size; ++i){
+    for (int i = 0; i < input_size; ++i){
         rank[sa[i]] = i;
     }
 
@@ -438,9 +438,9 @@ vector<set<pair<int, int>>> compute_runs(
     ) {
 
     // create runs list
-    vector<vector<int>> runs(size, vector<int>(3));
+    vector<vector<int>> runs(input_size, vector<int>(3));
 
-    if (size < 120) {
+    if (input_size < 120) {
         vector<int> tmp(120, 0);
         lcp.insert(lcp.end(), tmp.begin(), tmp.end());
         lcs.insert(lcs.end(), tmp.begin(), tmp.end());
@@ -449,14 +449,14 @@ vector<set<pair<int, int>>> compute_runs(
     RMQ_succinct RMq_lcp = RMQ_succinct(LCP.data(), lcp.size());
     RMQ_succinct RMq_lcs = RMQ_succinct(lcs.data(), lcs.size());
 
-    vector<set<pair<int, int>>> unique_runs(size); // TODO: This should be a hashtable instead of a vector b/c resizing using .insert() is inefficient, which requires reallocation of vector size. Hashtable addresses this with chaining.
+    vector<set<pair<int, int>>> unique_runs(input_size); // TODO: This should be a hashtable instead of a vector b/c resizing using .insert() is inefficient, which requires reallocation of vector size. Hashtable addresses this with chaining.
 
     int top = 0;
-    for (int per = 1; per <= floor(size / 2); per++) {
+    for (int per = 1; per <= floor(input_size / 2); per++) {
         int pos = per - 1;
-        while (pos + per < size) {
+        while (pos + per < input_size) {
             int right = lcp[lc(RMq_lcp, lcp, rank, pos, pos + per)];
-            int left = lcs[lc(RMq_lcs, lcs, rev_rank, size - pos - 1, size - pos - per - 1)];
+            int left = lcs[lc(RMq_lcs, lcs, rev_rank, input_size - pos - 1, input_size - pos - per - 1)];
 
             if (left + right > per) {
                 pair<int, int> run_pair = make_pair(
@@ -471,22 +471,22 @@ vector<set<pair<int, int>>> compute_runs(
         }
     }
 
-    if (size < 120) {
-        lcp.resize(size);
-        lcs.resize(size);
+    if (input_size < 120) {
+        lcp.resize(input_size);
+        lcs.resize(input_size);
     }
     return unique_runs;
 }
 
 void compute_R1() {
-   R1.reserve(size);
+   R1.reserve(input_size);
    stack<tuple<int, int>> st;
    int lastr1 = 0;
 
    R1[0] = -1;
    st.push(make_tuple(0, 0));
 
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < input_size; i++) {
         if ((LCP[i] != 0) && (LCP[i] == LCP[get<0>(st.top())]) ) {
             R1[i] = get<1>(st.top());
         }
@@ -515,8 +515,8 @@ void compute_R1() {
 }
 
 void compute_RM() {
-    RM.reserve(size);
-    for (int i = 0; i < size; ++i) {
+    RM.reserve(input_size);
+    for (int i = 0; i < input_size; ++i) {
         if (RSF[i] != 0) {
             RM[i] = R1[i] + RSF[i] - 1;
         }
