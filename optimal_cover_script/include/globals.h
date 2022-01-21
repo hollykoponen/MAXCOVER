@@ -17,7 +17,7 @@ using namespace std;
 extern string input;
 extern int input_size;
 extern int sorted_i; 
-extern int sorted_j;  
+extern int sorted_j; 
 extern vector<int> SA;
 extern vector<int> LCP;
 extern vector<int> RSF;

@@ -350,16 +350,21 @@ void Compute_OC_main(int top_ten){
     compute_R1();
     compute_RM();    
 
-    PrintArray(SA); PrintArray(LCP); PrintArray(RSF);
+    // cout << "SA:" << endl; PrintArray(SA);
+    // cout << "\nLCP:" << endl; PrintArray(LCP);
+    // cout << "\nRSF:" << endl; PrintArray(RSF);
 
+    printf("done SA, LCP, RSF, R1, RM\n");
 
+    runs_for_exrun(); printf("done runs_for_exrun");
     //OLP =  compute_olp(runs);
-    OLP =  compute_OLP_nlogn(runs);
+    OLP = compute_olp_improved(); 
+    //OLP =  compute_OLP_nlogn(runs);
     RSPC = compute_rspc();
     OCList = compute_optimal_covers();
 
     vector<int> top_ten_covers;
-    
+
     if(top_ten == 1){
         top_ten_covers = compute_top_ten_covers();
     }

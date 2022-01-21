@@ -13,22 +13,19 @@ using namespace std;
 
 int get_max(vector<vector<int>> &vec);
 void reset_SA_temp();
-void set_OLP_nlogn_variables(
-    int &lcp_i_source, 
-    int top_index_source
-    );
+void copy_SA_to_SA_temp(int x, int y);
+void PrintSA_temp(int x, int y);
 
 // COMPUTE OLP_nlogn O(nlogn) Implementation ===========================================================
 
 vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src);
 void remove_non_eligible_runs();
-void eligible_run(  
+void compute_Ru(  
     int i,
     int j,
     int &sorted_i,
     int &sorted_j
     );
-void copy_sort_compute(int x, int y);
 void compute_eruns(
     int i, 
     int j
@@ -39,15 +36,20 @@ void merge_compute_eruns(
     int i2, 
     int j2
     );
-int compute_OLP_nlogn_at_index();
+int compute_OLPi_nlogn();
 // void compute_sorted_range(
 //     int r1, 
 //     int rm
 //     );
 
+// COMPUTE OLP Quadratic IMPROVED Implementation ========================================================
+
+vector<int> compute_olp_improved();
+int maxborder(string u, int n);
+vector<int> borderarray(string text, int n);
+
 // COMPUTE OLP Quadratic Implementation ===========================================================
 
-void runs_for_exrun();
 vector<int> compute_olp(vector<set<pair<int, int>>> runs_src);
 vector<int> compute_rank(vector<int> &sa);
 int lc(
