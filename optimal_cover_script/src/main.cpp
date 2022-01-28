@@ -108,7 +108,8 @@ void runs_for_exrun(){
     SA_rev = compute_sa(reversed_input);
     LCS = compute_lcp(reversed_input, SA_rev);
     revRANK = compute_rank(SA_rev);
-    runs = compute_runs(LCP, LCS, RANK, revRANK);
+    // runs = compute_runs(LCP, LCS, RANK, revRANK);
+    compute_runs(LCP, LCS, RANK, revRANK);
 }
 
 /* compute RSF array of string */
@@ -358,8 +359,10 @@ void Compute_OC_main(int top_ten){
 
     runs_for_exrun(); printf("done runs_for_exrun");
     //OLP =  compute_olp(runs);
-    OLP = compute_olp_improved(); 
+    OLP = compute_olp(); // original using hashtable
+    // OLP = compute_olp_improved(); 
     //OLP =  compute_OLP_nlogn(runs);
+    // OLP =  compute_OLP_nlogn(); // using hashtable
     RSPC = compute_rspc();
     OCList = compute_optimal_covers();
 

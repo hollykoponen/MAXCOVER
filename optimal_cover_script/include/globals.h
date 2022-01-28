@@ -10,6 +10,7 @@
 #include <set>
 #include <stack>
 #include <map>
+#include <iterator>
 
 using namespace std;
 
@@ -34,7 +35,7 @@ extern vector<int> SA_rev;
 extern vector<int> LCS;
 extern vector<int> revRANK;
 extern vector<set<pair<int, int>>> runs;
-extern map<int, std::vector<int>> runsHT;
+extern multimap<int, vector<int>> runsHT;
 extern vector<int> OLP;
 extern vector<int> RSPC;
 extern vector<int> OCList;

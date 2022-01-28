@@ -11,8 +11,8 @@ using namespace std;
 // Global Variables to compute OLP Definition ======================================================
 
 
-vector<set<pair<int, int>>> runs;
-map<int, std::vector<int>> runsHT;
+// vector<set<pair<int, int>>> runs;
+multimap<int, std::vector<int>> runsHT;
 
 int sorted_i = 0; 
 int sorted_j = 0;  
@@ -59,9 +59,9 @@ void PrintSA_temp(int x, int y){
 
 /* compute OLP_nlogn array of string */
 /* O(nlogn) implementation */
-vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src) {
-
-    runs = runs_src;
+// vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src) {
+vector<int> compute_OLP_nlogn() {
+    // runs = runs_src;
     vector<int> OLP_nlogn = vector<int>(input_size, 0); // initialize vector of 0's of length input_size
     stack<pair<int,int>> st; // stack of pairs (index, r1)
     pair<int,int> top; // (index, r1)
@@ -446,9 +446,9 @@ int maxborder(string text, int n){ // Given by Neerja, modified to vectors for t
 
 /* compute OLP array of string */
 /* QUADRATIC implementation */
-vector<int> compute_olp(vector<set<pair<int, int>>> runs_src) {
-
-    runs = runs_src;
+// vector<int> compute_olp(vector<set<pair<int, int>>> runs_src) {
+vector<int> compute_olp() {
+    // runs = runs_src;
     vector<int> olp(input_size,0);
     reset_SA_temp();
     OLP.reserve(input_size);
@@ -486,7 +486,8 @@ int lc(
     );
 }
 
-vector<set<pair<int, int>>> compute_runs(
+// vector<set<pair<int, int>>> compute_runs(
+void compute_runs(
     vector<int> &lcp,
     vector<int> &lcs,
     vector<int> &rank,
@@ -494,7 +495,7 @@ vector<set<pair<int, int>>> compute_runs(
     ) {
 
     // create runs list
-    vector<vector<int>> runs(input_size, vector<int>(3));
+    // vector<vector<int>> runs(input_size, vector<int>(3));
 
     if (input_size < 120) {
         vector<int> tmp(120, 0);
@@ -505,7 +506,7 @@ vector<set<pair<int, int>>> compute_runs(
     RMQ_succinct RMq_lcp = RMQ_succinct(LCP.data(), lcp.size());
     RMQ_succinct RMq_lcs = RMQ_succinct(lcs.data(), lcs.size());
 
-    vector<set<pair<int, int>>> unique_runs(input_size); // TODO: This should be a hashtable instead of a vector b/c resizing using .insert() is inefficient, which requires reallocation of vector size. Hashtable addresses this with chaining.
+    // vector<set<pair<int, int>>> unique_runs(input_size); // TODO: This should be a hashtable instead of a vector b/c resizing using .insert() is inefficient, which requires reallocation of vector size. Hashtable addresses this with chaining.
 
     int top = 0;
     for (int per = 1; per <= floor(input_size / 2); per++) {
@@ -515,11 +516,12 @@ vector<set<pair<int, int>>> compute_runs(
             int left = lcs[lc(RMq_lcs, lcs, rev_rank, input_size - pos - 1, input_size - pos - per - 1)];
 
             if (left + right > per) {
-                pair<int, int> run_pair = make_pair(
+                vector<int> run_pair = {
                     pos - left + 1,
                     pos + per + right - 1
-                );
-                unique_runs[per].insert(run_pair); // TODO: This should be a hashtable instead of a vector b/c resizing using .insert() is inefficient, which requires reallocation of vector size. Hashtable addresses this with chaining.
+                };
+                // unique_runs[per].insert(run_pair); // TODO: This should be a hashtable instead of a vector b/c resizing using .insert() is inefficient, which requires reallocation of vector size. Hashtable addresses this with chaining.
+                runsHT.insert({per, run_pair});
             }
 
             pos = pos + per;
@@ -531,7 +533,27 @@ vector<set<pair<int, int>>> compute_runs(
         lcp.resize(input_size);
         lcs.resize(input_size);
     }
-    return unique_runs;
+    // return unique_runs;
+
+
+
+
+    multimap <int, vector<int> >::const_iterator it;
+
+    for (it = runsHT.begin(); it != runsHT.end(); ++it)
+    {
+        cout << "period:" << it->first << endl ;
+
+        vector<int>::const_iterator itVec;
+        for (itVec = it->second.begin(); itVec != it->second.end(); ++itVec)
+        {
+            cout << *itVec <<" ";
+        }
+        cout<<endl;
+    }
+
+
+
 }
 
 void compute_R1() {
@@ -586,13 +608,15 @@ vector<int> exrun(
     ) {
 
     vector<int> r = vector<int>(3);    
+    typedef multimap<int, vector<int>>::iterator MMAPIterator;
 
-    for (int p = 0; p <= ((j - i + 1) / 2); ++p) { // don't need this, if (p = (j-i+1)/2) then ...
-        if (runs[p].size() > 0) {
-            for (auto run : runs[p]) {
-                r = { get<0>(run), get<1>(run), p };
-                if (r[0] <= i && j <= r[1]) {
-                    return r;
+    for (int p = 0; p <= ((j - i + 1) / 2); p++) { // don't need this, if (p = (j-i+1)/2) then ...
+        pair<MMAPIterator, MMAPIterator> result = runsHT.equal_range(p); // result = runs_of_period_p
+        if (result.first != result.second) {
+            for (MMAPIterator it = result.first; it != result.second; it++) {
+                e = { it->second[0], it->second[1], p };
+                if (e[0] <= i && j <= e[1]) {
+                    return e;
                 }
             }
         }

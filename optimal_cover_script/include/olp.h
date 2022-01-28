@@ -18,7 +18,8 @@ void PrintSA_temp(int x, int y);
 
 // COMPUTE OLP_nlogn O(nlogn) Implementation ===========================================================
 
-vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src);
+// vector<int> compute_OLP_nlogn(vector<set<pair<int, int>>> runs_src);
+vector<int> compute_OLP_nlogn();
 void remove_non_eligible_runs();
 void compute_Ru(  
     int i,
@@ -50,7 +51,8 @@ vector<int> borderarray(string text, int n);
 
 // COMPUTE OLP Quadratic Implementation ===========================================================
 
-vector<int> compute_olp(vector<set<pair<int, int>>> runs_src);
+// vector<int> compute_olp(vector<set<pair<int, int>>> runs_src);
+vector<int> compute_olp();
 vector<int> compute_rank(vector<int> &sa);
 int lc(
     RMQ_succinct &,
@@ -59,7 +61,8 @@ int lc(
     const int&,
     const int&
     );
-vector<set<pair<int, int>>> compute_runs(
+// vector<set<pair<int, int>>> compute_runs(
+void compute_runs(
     vector<int> &lcp,
     vector<int> &lcs,
     vector<int> &rank,
