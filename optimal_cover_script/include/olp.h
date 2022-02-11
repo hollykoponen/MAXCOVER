@@ -15,6 +15,8 @@ int get_max(vector<vector<int>> &vec);
 void reset_SA_temp();
 void copy_SA_to_SA_temp(int x, int y);
 void PrintSA_temp(int x, int y);
+vector<int> subvec(vector<int> const &v, int m, int n);
+void PrintStacksss(stack<pair<int,int>> s);
 
 // COMPUTE OLP_nlogn O(nlogn) Implementation ===========================================================
 
@@ -47,7 +49,9 @@ int compute_OLPi_nlogn();
 
 vector<int> compute_olp_improved();
 int maxborder(string u, int n);
-vector<int> borderarray(string text, int n);
+void ProcessStack(stack<pair<int,int>> &st, vector<int> &olp);
+// bool non_empty_border(string text, int n);
+// vector<int> borderarray(string text, int n);
 
 // COMPUTE OLP Quadratic Implementation ===========================================================
 

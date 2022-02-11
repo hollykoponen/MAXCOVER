@@ -55,6 +55,25 @@ void PrintSA_temp(int x, int y){
     PrintArrays(vector<int>(SA_temp.begin() + x, SA_temp.begin() + y + 1) );
 }
 
+vector<int> subvec(vector<int> const &v, int m, int n) {
+   auto first = v.begin() + m;
+   auto last = v.begin() + n + 1;
+   vector<int> vector(first, last);
+   return vector;
+}
+
+void PrintStacksss(stack<pair<int,int>> s){
+    if (s.empty())
+        return;
+ 
+    pair<int,int> x = make_pair(s.top().first, s.top().second);
+    s.pop();
+    PrintStacksss(s);
+    printf("(%d,%d), ", x.first, x.second);
+    s.push(x);
+}
+
+
 // COMPUTE OLP_nlogn O(nlogn) Implementation ===========================================================
 
 /* compute OLP_nlogn array of string */
@@ -76,7 +95,7 @@ vector<int> compute_OLP_nlogn() {
             top = st.top(); top_i = top.first;
             if (LCP[top_i] < LCP[index]) { st.push( make_pair(index, index-1) );}
             else{
-                if (LCP[index] <= 1){
+                if (LCP[index] < 2){
                     runsHT.clear(); sorted_i = 0; sorted_j = 0; // clears the contents of hash table; 
                     reset_SA_temp(); cout << "We reset_SA_temp" << endl;
                 }
@@ -90,8 +109,8 @@ vector<int> compute_OLP_nlogn() {
                     }
                     st.pop();
                 }
-                if (!st.empty() && top_i == LCP[index]) { OLP_nlogn[index] = 0; }
-                else { st.push( make_pair(index, top_i-1) ); }
+                if (!st.empty() && LCP[top_i] == LCP[index]) { OLP_nlogn[index] = 0; }
+                else { st.push( make_pair(index, top.second) ); }
             }
         }
         index++;
@@ -392,35 +411,106 @@ int compute_OLPi_nlogn() {
 // COMPUTE OLP Quadratic IMPROVED Implementation ========================================================
 vector<int> compute_olp_improved(){
     
+
+    // PrintArrays(subvec(SA,170,190));    PrintArrays(subvec(LCP,170,190));    PrintArrays(subvec(RSF,170,190));
+    // PrintArrays(SA);PrintArrays(LCP);PrintArrays(RSF);
+
     vector<int> olp(input_size,0); // initialize OLP to a vector full of 0's
     reset_SA_temp();
+    stack<pair<int, int>> st;
+    #define top_i st.top().first
+    #define top_r1 st.top().second
+    #define push_pair(i, r1) st.push(make_pair(i, r1))
+    push_pair(1, 0);
+    int prev_r1 = 0;
 
-    for (int i = 1; i < input_size; i++){
-        string u = input.substr(SA[i],LCP[i]);
-        if (RSF[i] > 1 
-            and LCP[i] > 2 
-            and (RSF[i] > RSF[i-1] or LCP[i] > LCP[i-1])
-            and maxborder(u, LCP[i]) > 0 // u = input[SA[i]:SA[i]+LCP[i]], find max border
-            ) {
+    // for (int i = 1; i < input_size; i++){
+    //     string u = input.substr(SA[i],LCP[i]);
+    //     if (RSF[i] > 1 
+    //         and ((LCP[i]==2 and u[0]==u[1]) or LCP[i] > 2) 
+    //         // and (RSF[i] > RSF[i-1] or LCP[i] > LCP[i-1]) // and maxborder(u, LCP[i]) > 0 // u = input[SA[i]:SA[i]+LCP[i]], find max border
+    //         and maxborder(u, LCP[i])
+    //         ) {   
 
-            int x = i-1; int y = i+RSF[i]-2;
+    //         int i_prime = i;
+    //         while (LCP[i_prime-1] >= LCP[i]) {--i_prime;}
+    //         int x = i_prime-1; int y = x + RSF[i]-1;
 
-            copy_SA_to_SA_temp(x,y); // resets SA_temp
-            sort(SA_temp.begin() + x, SA_temp.begin() + y); // changed LOC to SA_temp
+    //         copy_SA_to_SA_temp(x,y); // resets SA_temp
+    //         sort(SA_temp.begin() + x, SA_temp.begin() + y+1); // changed LOC to SA_temp
+    //         int sum = 0; int maxdiff = LCP[i];
 
-            int sum = 0; int maxdiff = LCP[i];
+    //         for (int j = 1; j < RSF[i]; j++){
+    //             int diff = SA_temp[x+j] - SA_temp[x+j-1];
+    //             if (diff < maxdiff) {
+    //                 sum += maxdiff - diff;
+    //             }
+    //         }
+    //         olp[i] = sum;
+    //     }
+    // } 
+ 
 
-            for (int j = 1; j < RSF[i]; j++){
-                int diff = SA_temp[x+j] - SA_temp[y+j-1];
-                if (diff < maxdiff) {
-                    sum += maxdiff - diff;
-                }
+    for (int i = 2; i < input_size; i++){
+        if (LCP[top_i] < LCP[i]) { push_pair(i,i-1);}
+        else if (LCP[top_i] == LCP[i]) {continue;}       // == is handled where olp[i]=0, which is already initialized as an array of 0's
+        else {                                              // if (LCP[st.top().first] > LCP[i]) { 
+            while ( !st.empty() and LCP[top_i] > LCP[i]) {
+                prev_r1 = top_r1;
+                ProcessStack(st, olp);
+                st.pop();
             }
-            olp[i] = sum;
+            if (st.empty() or LCP[top_i] < LCP[i]) {
+                push_pair(i, prev_r1);
+            }                  
+            else{continue;} // if LCP[top] == LCP[i] then continue
         }
     }
+
+    while (!st.empty()){ProcessStack(st, olp); st.pop();}
+
+    // PrintArrays(subvec(olp,180,190));
+    // PrintArrays(olp);
+
     return olp;
+} 
+
+void ProcessStack(stack<pair<int,int>> &st, vector<int> &olp){
+
+    string u = input.substr(SA[top_i],LCP[top_i]);
+    if (RSF[top_i] > 1 
+        and (LCP[top_i] > 2 or (LCP[top_i]==2 and u[0]==u[1]))
+        and maxborder(u, LCP[top_i])
+    ) {
+        int x = top_r1; int y = x + RSF[top_i]-1;
+
+        copy_SA_to_SA_temp(x,y); // resets SA_temp
+        sort(SA_temp.begin() + x, SA_temp.begin() + y+1); // changed LOC to SA_temp
+        int sum = 0; int maxdiff = LCP[top_i];
+
+        for (int j = 1; j < RSF[top_i]; j++){
+            int diff = SA_temp[x+j] - SA_temp[x+j-1];
+            if (diff < maxdiff) {
+                sum += maxdiff - diff;
+            }
+        }
+        olp[top_i] = sum; //printvar(olp[st.top().first]);        
+    }
 }
+
+// bool non_empty_border(string u, int m){ // Given by Neerja, modified to vectors for this code
+//     vector<int> BA(m, 0); // initialize vector full of 0's
+//     for (int i = 0; i < m-1; i++) {
+//         int b = BA[i];
+//         while(b > 0 and u[i+1] != u[b]){ //u[i+1], u[b] are compared as the indicies begin with 0 instead of 1.
+//             b = BA[b-1];
+//         }
+//         if(u[b] == u[i+1]){
+//             return true; // break here
+//         }
+//     }
+//     return false;
+// }
 
 int maxborder(string text, int n){ // Given by Neerja, modified to vectors for this code
 
@@ -441,6 +531,7 @@ int maxborder(string text, int n){ // Given by Neerja, modified to vectors for t
     }
 }
 
+
 // COMPUTE OLP Quadratic Implementation ===========================================================
 
 
@@ -456,8 +547,11 @@ vector<int> compute_olp() {
         if (RSF[i] != 0) {
             olp[i] = compute_olpi(i, R1[i], RM[i]);
         }
-        printf("done %d, len = %d\n", i, input_size);
+        // printf("done %d, len = %d\n", i, input_size);
     }
+
+    // PrintArrays(subvec(olp,110,120)); 
+    // PrintArrays(olp);
 
     return olp;
 }
@@ -538,19 +632,19 @@ void compute_runs(
 
 
 
-    multimap <int, vector<int> >::const_iterator it;
+    // multimap <int, vector<int> >::const_iterator it;
 
-    for (it = runsHT.begin(); it != runsHT.end(); ++it)
-    {
-        cout << "period:" << it->first << endl ;
+    // for (it = runsHT.begin(); it != runsHT.end(); ++it)
+    // {
+    //     cout << "period:" << it->first << endl ;
 
-        vector<int>::const_iterator itVec;
-        for (itVec = it->second.begin(); itVec != it->second.end(); ++itVec)
-        {
-            cout << *itVec <<" ";
-        }
-        cout<<endl;
-    }
+    //     vector<int>::const_iterator itVec;
+    //     for (itVec = it->second.begin(); itVec != it->second.end(); ++itVec)
+    //     {
+    //         cout << *itVec <<" ";
+    //     }
+    //     cout<<endl;
+    // }
 
 
 
@@ -614,7 +708,7 @@ vector<int> exrun(
         pair<MMAPIterator, MMAPIterator> result = runsHT.equal_range(p); // result = runs_of_period_p
         if (result.first != result.second) {
             for (MMAPIterator it = result.first; it != result.second; it++) {
-                e = { it->second[0], it->second[1], p };
+                vector<int> e = { it->second[0], it->second[1], p };
                 if (e[0] <= i && j <= e[1]) {
                     return e;
                 }
